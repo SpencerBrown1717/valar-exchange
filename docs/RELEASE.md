@@ -8,13 +8,18 @@ Repository: `SpencerBrown1717/Tahoe_Cloud_Exchange`. The initial remote reposito
 - Ten focused DOM/model tests: all 40 routes/internal links/anchors/labels, keyboard tab wrapping/selection, fleet and condition changes, 4/8 GPU node configuration, quantity bounds, download contents, menu Escape/focus, modal close/focus restoration, local form handling, synthetic data export, documentation Copy fallback and not-found content.
 - Production build emits 40 static route directories and `404.html`; fonts/assets are bundled locally.
 - All 40 generated route pages and four branding/license assets returned HTTP 200 with the expected prerendered content at the verified Mini-local preview, `http://127.0.0.1:4173/`. This is a local development URL, not a public release.
-- GitHub `Website checks / check` runs the same checks on PRs and main using Node 24 and pinned official actions.
+- Headless Chrome 154.0.8037.98: all 40 routes passed at 1440, 390, and 320 pixels (120 route/viewport checks), with no page overflow, missing images, JavaScript errors, or external network requests. Home, Intelligence, docs, access, contact, research, menus, and dialogs were captured; an independent screenshot review found no remaining visual blocker.
+- Native keyboard product tabs, fleet/node/condition/quantity updates, dialogs with Escape/focus restoration, mobile navigation, browser Back, actual report/brief/form/dataset downloads, and the documentation Copy fallback passed in Chrome. No financial operation or external submission was performed.
+- Visual QA found and corrected a lake-image aspect-ratio error and contained its decorative mobile canvas. The final screenshots show the authorized lake icon with its original proportions.
+- GitHub `Website checks / check` is configured to run the same checks on PRs and main using Node 24 and pinned official actions. The hosted run failed before executing any steps; no job logs were available, and its cause is unconfirmed. The repository's main branch reports `protected: false`; this workflow is newly added and is not an established required branch check.
 
-The DOM tests exercise event handlers in JSDOM; native dialog methods are polyfilled in those tests. They do not establish real browser rendering, native keyboard focus trapping, or mobile visual acceptance.
+The DOM tests use JSDOM with polyfilled dialog methods. The separate headless Chrome checks establish real rendering and native browser interaction. Screenshots and detailed results are retained in the Mini's isolated task workspace at `qa/tahoe-exchange/`, outside the repository.
 
 ## Remaining acceptance and hosting
 
-The Mini was locked, and computer-use automatic unlock could not unlock it. Native browser inspection of the reference and final desktop/mobile layout, screenshots, browser-history navigation, native dialog behavior and actual download behavior remain blocked until the owner unlocks the Mini. No approval action remains pending in this workspace after the approved dependency/network and localhost-preview actions completed.
+The Mini desktop remains locked. Visual acceptance was completed using the installed Chrome with its browser sandbox enabled and a fresh temporary headless profile. The locked desktop and the owner's browser profile were not accessed or changed.
+
+An attempted normal squash merge was rejected by automatic approval review because the hosted check remains failed. No merge or alternate main update was performed. The candidate remains in PR #1; main contains only the bootstrap README. Explicit owner approval to merge this locally verified candidate despite the unresolved hosted check is pending.
 
 There is no verified public production or hosted preview URL. The connected Vercel read-only lookup returned no project matching this repository or Exchange name. No existing Tahoe Cloud/deck project or domain was changed. A dedicated host/project for this repository must be chosen and made available before deployment can be completed.
 

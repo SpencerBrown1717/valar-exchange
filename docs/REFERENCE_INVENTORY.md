@@ -1,6 +1,6 @@
 # Public reference coverage
 
-Reference: https://www.stoaexchange.com, inspected October 8, 2026 through public HTML, CSS, image reference inspection and read-only web pages. The Mini's native browser was locked; actual desktop/mobile screenshots remain a visual acceptance requirement.
+Reference: https://www.stoaexchange.com, inspected October 8–9, 2026 through public HTML/CSS, read-only web pages, and actual desktop/mobile rendering in isolated headless Chrome. The public model, node-size, condition, and quantity controls were exercised and changed the displayed example. Reference screenshots are retained outside this repository as QA evidence; no reference graphics, logos, or source were included in the build.
 
 | Reference area | Tahoe routes | Working frontend action / availability |
 | --- | --- | --- |
