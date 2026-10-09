@@ -96,7 +96,16 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
   });
   doc.defaultView?.addEventListener('resize', () => { if (doc.defaultView!.innerWidth > 760) closeMenu(); });
   doc.addEventListener('keydown', event => {
-    if (menu.getAttribute('aria-expanded') !== 'true') return;
+    if (menu.getAttribute('aria-expanded') !== 'true') {
+      if (event.key === 'Escape') {
+        const openDropdown = doc.querySelector<HTMLDetailsElement>('.nav-dropdown[open]');
+        if (openDropdown) {
+          openDropdown.open = false;
+          openDropdown.querySelector<HTMLElement>('summary')?.focus();
+        }
+      }
+      return;
+    }
     if (event.key === 'Escape') { closeMenu(); menu.focus(); }
     if (event.key === 'Tab') {
       const stops = [...nav.querySelectorAll<HTMLElement>('a,button,summary')].filter(element => element.getClientRects().length > 0);
@@ -123,6 +132,9 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
 
   doc.addEventListener('click', event => {
     const target = event.target as HTMLElement;
+    if (menu.getAttribute('aria-expanded') !== 'true' && !target.closest('.nav-dropdown')) {
+      doc.querySelectorAll<HTMLDetailsElement>('.nav-dropdown[open]').forEach(dropdown => { dropdown.open = false; });
+    }
     const productLink = target.closest<HTMLElement>('[data-product]');
     if (productLink) { tab = productLink.dataset.product as ProductTab; update(); }
     if (target.closest('#primary-nav a')) closeMenu();

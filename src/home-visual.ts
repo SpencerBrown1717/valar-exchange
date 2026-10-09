@@ -1,0 +1,13 @@
+/** Original schematic artwork; all displayed records are fictional. */
+export function assetPreview(): string {
+  return `<div class="asset-preview">
+    <div class="asset-preview-top"><span>VALAR <i>/</i> ASSET INTELLIGENCE</span><span class="preview-tag">ILLUSTRATIVE</span></div>
+    <div class="asset-preview-title"><div><span class="tiny-label">COMPUTE INFRASTRUCTURE</span><h2>NVIDIA H100</h2><p>SXM architecture · 80 GB HBM3</p></div><span class="asset-identifier">VE—014<br/><small>ASSET RECORD</small></span></div>
+    <div class="chip-schematic" aria-hidden="true">
+      <svg viewBox="0 0 520 250" fill="none"><defs><linearGradient id="chip-surface" x1="165" y1="40" x2="345" y2="210" gradientUnits="userSpaceOnUse"><stop stop-color="#354e44"/><stop offset="1" stop-color="#172c25"/></linearGradient><pattern id="chip-grid" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" stroke="#abc2b3" stroke-opacity=".08"/></pattern></defs><path fill="url(#chip-grid)" d="M0 0h520v250H0z"/><g stroke="#8bafa1" stroke-width="1"><path opacity=".3" d="m48 128 209-110 215 110-215 110L48 128Z"/><path opacity=".15" d="m16 128 241-127 247 127-247 127L16 128Z"/><path fill="#152920" d="m93 133 164-86 169 86v17l-169 86-164-86v-17Z"/><path fill="#233a30" d="m93 133 164-86 169 86-169 86-164-86Z"/><path stroke-opacity=".5" d="M257 219v17m-164-103 164 86 169-86"/><path fill="url(#chip-surface)" d="m160 115 97-51 100 51v24l-100 52-97-52v-24Z"/><path fill="#3d5748" d="m160 115 97-51 100 51-100 52-97-52Z"/><path stroke="#c0c49a" d="m183 115 74-39 77 39-77 40-74-40Z"/><path opacity=".4" d="m199 116 58-31 61 31-61 31-58-31Z"/><path stroke-opacity=".5" d="M257 167v24"/><g stroke-opacity=".55"><path d="m120 129 25-13m-12 21 23-12m-11 20 23-12m-11 21 23-12m-10 20 23-12m-11 21 23-12m-10 20 23-12m-12 20 23-12m68 7 24 13m-12-21 24 13m-11-21 24 13m-12-20 24 12m-11-21 24 13m-12-21 24 13m-11-21 24 13"/></g><path stroke="#b8bc8e" stroke-opacity=".75" d="m94 132-33-17H22m403 18 32-17h41M256 47V24"/><circle cx="22" cy="115" r="3" fill="#b8bc8e" stroke="none"/><circle cx="498" cy="116" r="3" fill="#b8bc8e" stroke="none"/></g></svg>
+      <span class="schematic-note">PRECISION AT THE ASSET LEVEL</span><span class="schematic-scale">01 / 03</span>
+    </div>
+    <dl class="asset-preview-metrics"><div><dt>Fleet size</dt><dd>64 <span>GPUs</span></dd></div><div><dt>Configuration</dt><dd>8 <span>nodes</span></dd></div><div><dt>Memory / GPU</dt><dd>80 <span>GB</span></dd></div></dl>
+    <a class="asset-preview-link" href="/marketplace#platform"><span><i></i>Explore the sample workspace</span><span aria-hidden="true">↗</span></a>
+  </div>`;
+}

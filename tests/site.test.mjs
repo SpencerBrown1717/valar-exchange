@@ -244,3 +244,39 @@ test('GPU-IQ premium is an open preview with filtered fictional metrics and loca
   assert.match(files[1].content, /does not activate premium access/);
   dom.window.close();
 });
+
+test('desktop company menu dismisses on Escape or outside click', () => {
+  const { doc, dom } = setup();
+  const dropdown = doc.querySelector('.nav-dropdown');
+  const summary = dropdown.querySelector('summary');
+  dropdown.open = true;
+  dropdown.querySelector('a').focus();
+  doc.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  assert.equal(dropdown.open, false);
+  assert.equal(doc.activeElement, summary);
+  dropdown.open = true;
+  doc.querySelector('h1').click();
+  assert.equal(dropdown.open, false);
+  dom.window.close();
+});
+
+test('market filter chips preserve literal text and recover keyboard focus', () => {
+  const { doc, dom, event } = setup('/marketplace');
+  const search = doc.querySelector('#deal-search');
+  search.value = '<img src=x onerror=alert(1)>';
+  search.dispatchEvent(event('input'));
+  const chip = doc.querySelector('[data-remove-filter="deal-search"]');
+  assert.ok(chip.textContent.includes(search.value));
+  assert.equal(chip.querySelector('img'), null);
+  chip.click();
+  assert.equal(search.value, '');
+  assert.equal(doc.activeElement, search);
+  assert.equal(doc.querySelectorAll('.deal-card').length, 3);
+  assert.equal(doc.querySelector('#deal-active-filters').hidden, true);
+  search.value = 'no matching asset';
+  search.dispatchEvent(event('input'));
+  doc.querySelector('[data-reset-deals]').click();
+  assert.equal(doc.querySelectorAll('.deal-card').length, 3);
+  assert.equal(doc.activeElement, search);
+  dom.window.close();
+});
