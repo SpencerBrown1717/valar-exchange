@@ -2,6 +2,12 @@
 
 Canonical repository: [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). It was renamed in place from `Tahoe_Cloud_Exchange`, preserving its history. The initial repository was empty, with no application, instructions, license, or hosting configuration. No pre-existing repository license was removed.
 
+## Daily Research feature
+
+This feature follows the verified visual release at main `2c7792cf4f4bba62d09c49adb98d54db9fceec86`. It preserves the existing Vercel project/domain and adds editorial Research rendering, static article/SEO output, a versioned primary-source playbook and a bounded Git-backed publisher. Owner pause/edit/remove controls and a retained daily/story ledger protect retries and removals. Manual runs hold private draft artifacts; scheduled publication has separate default-off approval and activation gates.
+
+No actual model generation, real news publication, API-key configuration or daily activation is established by this code release. The public industry-news dataset starts empty; fixture articles exist only in offline tests and isolated QA documents. The source collector was verified with ordinary unauthenticated GETs to the three permitted official feeds and current NVIDIA/Applied Digital pages. See [secure owner setup and precise activation gates](RESEARCH_SETUP.md) and [editorial playbook/evaluation limits](RESEARCH_PLAYBOOK.md). Preserve the publication ledger during future rollback; deleting it can defeat deduplication.
+
 ## Verified production baseline
 
 Production: [tahoe-cloud-exchange.vercel.app](https://tahoe-cloud-exchange.vercel.app), verified at main [`2fcc81ae8df686a892f8e3d87f1edea5e25bfe60`](https://github.com/SpencerBrown1717/valar-exchange/commit/2fcc81ae8df686a892f8e3d87f1edea5e25bfe60). The owner deployed the repository through Vercel. Preserve the existing Git-connected project and production URL when releasing further changes.
