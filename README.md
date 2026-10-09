@@ -22,7 +22,7 @@ npm run preview -- --port 4173
 
 - Markets with three fictional deal profiles, combined search/hardware/region/strategy filters, sorting and profile downloads.
 - GPU-IQ Free public summaries and an openly accessible Premium demonstration with comparisons, filters, original research and local CSV exports. No secure paywall, pricing, subscription or checkout.
-- Data, Research and three original articles.
+- Editorial Research index, newest-first source-linked news article rendering, and three original evergreen guides. Daily publishing is implemented and paused pending owner setup.
 - About, FAQ, Contact, access chooser, product signup previews, sign-in/recovery availability pages, privacy, terms, security and trust status.
 - Original browser-product documentation, CLI availability pages, and reference-route aliases.
 - Three synthetic fleets; 4/8 GPUs per node; bounded quantity controls; condition assumptions; Markets/Intelligence/Reporting tabs with keyboard navigation.
@@ -35,6 +35,12 @@ There is no trading, quote execution, financing, payments, custody, authenticati
 
 ## Release and hosting
 
-Verified production: [tahoe-cloud-exchange.vercel.app](https://tahoe-cloud-exchange.vercel.app), deployed from main at [`2fcc81a`](https://github.com/SpencerBrown1717/valar-exchange/commit/2fcc81ae8df686a892f8e3d87f1edea5e25bfe60). The owner deployed this repository through its existing Vercel project. The GitHub repository was renamed in place from `Tahoe_Cloud_Exchange` to `valar-exchange`; preserve that project linkage and its current production URL.
+Verified production: [tahoe-cloud-exchange.vercel.app](https://tahoe-cloud-exchange.vercel.app), deployed from main at [`2c7792c`](https://github.com/SpencerBrown1717/valar-exchange/commit/2c7792cf4f4bba62d09c49adb98d54db9fceec86). The owner deployed this repository through its existing Vercel project. The GitHub repository was renamed in place from `Tahoe_Cloud_Exchange` to `valar-exchange`; preserve that project linkage and its current production URL.
 
-For a new release, verify the served assets and Vercel source commit before reporting it live. Build command: `npm run build`; output directory: `dist`; Node: 24+. No environment variables are required. See [release evidence](docs/RELEASE.md), [reference route/control coverage](docs/REFERENCE_INVENTORY.md), and [asset notices](NOTICE.md).
+For a new release, verify the served assets and Vercel source commit before reporting it live. Build command: `npm run build`; output directory: `dist`; Node: 24+. No frontend/Vercel environment variables are required. Daily Research uses server-side GitHub Actions configuration; it is paused until owner setup and first real article validation. See [release evidence](docs/RELEASE.md), [reference route/control coverage](docs/REFERENCE_INVENTORY.md), and [asset notices](NOTICE.md).
+
+## Daily Research
+
+The lean publishing job uses three verified primary RSS feeds, a configured Tahoe Qwen text-chat API, a bounded draft/grounding pass, and Git-backed publication slots/story tombstones. It publishes at most one source-supported article per calendar day, skipping stale, duplicate, uncertain or quiet days. No provider calls have been made. Newest articles appear first with VALAR Research bylines, source/event/publication dates and facts separated from analysis. There is no newsletter or public key/publishing form.
+
+Owner API-key entry, first private draft review, activation gates and pause/edit/remove commands: [Research setup](docs/RESEARCH_SETUP.md). Source/model standards and honest evaluation limits: [editorial playbook v1](docs/RESEARCH_PLAYBOOK.md).

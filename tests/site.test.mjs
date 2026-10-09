@@ -31,8 +31,13 @@ test('every public route renders and every internal link resolves', () => {
     assert.equal(new Set(ids).size, ids.length, `duplicate ID: ${path}`);
     for (const link of doc.querySelectorAll('a[href]')) {
       const url = new URL(link.getAttribute('href'), dom.window.location.href);
-      assert.equal(url.origin, dom.window.location.origin, `unexpected external link: ${path} ${url}`);
-      assert.ok(paths.has(url.pathname), `missing route: ${path} -> ${url.pathname}`);
+      if (url.origin !== dom.window.location.origin) {
+        assert.ok(['nvidianews.nvidia.com', 'ir.amd.com', 'ir.applieddigital.com'].includes(url.hostname), `unexpected source: ${url}`);
+        assert.equal(url.protocol, 'https:');
+        assert.ok(link.rel.includes('noopener'));
+        continue;
+      }
+      assert.ok(paths.has(url.pathname.replace(/\/+$/, '') || '/'), `missing route: ${path} -> ${url.pathname}`);
       if (url.hash) {
         const target = url.pathname === path ? doc : new JSDOM(renderPage(url.pathname).markup).window.document;
         assert.ok(target.getElementById(url.hash.slice(1)), `missing hash: ${path} -> ${url}`);
@@ -145,8 +150,8 @@ test('brief download keeps entered text as text and makes no submission claim', 
   dom.window.close();
 });
 
-test('contact, access, subscription, and dataset actions produce honest local exports', () => {
-  for (const path of ['/contact', '/marketplace/signup', '/intelligence/signup', '/research']) {
+test('contact, access, and dataset actions produce honest local exports', () => {
+  for (const path of ['/contact', '/marketplace/signup', '/intelligence/signup']) {
     const { doc, dom, files, event } = setup(path);
     const form = doc.querySelector('[data-local-form]');
     form.dispatchEvent(event('submit'));

@@ -1,0 +1,50 @@
+name: Daily VALAR Research
+on:
+  schedule:
+    - cron: '23 17 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: valar-research-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && vars.VALAR_RESEARCH_APPROVED == 'true' && (github.event_name == 'workflow_dispatch' || vars.VALAR_RESEARCH_DAILY_ENABLED == 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Collect and validate one draft
+        run: node scripts/research.mjs generate
+        env:
+          RESEARCH_RUNTIME_APPROVED: ${{ vars.VALAR_RESEARCH_APPROVED }}
+          TAHOE_RESEARCH_CHAT_URL: ${{ vars.TAHOE_RESEARCH_CHAT_URL }}
+          TAHOE_RESEARCH_MODEL: ${{ vars.TAHOE_RESEARCH_MODEL }}
+          TAHOE_RESEARCH_API_KEY: ${{ secrets.TAHOE_RESEARCH_API_KEY }}
+      - name: Check the exact proposed content and site
+        run: npm run check
+      - name: Save a private reviewed-draft candidate
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: valar-research-review
+          path: |
+            src/research-data.json
+            content/research/state.json
+          retention-days: 14
+      - name: Publish with an atomic main-branch update
+        if: github.event_name == 'schedule' && vars.VALAR_RESEARCH_DAILY_ENABLED == 'true'
+        run: node scripts/research.mjs publish
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}

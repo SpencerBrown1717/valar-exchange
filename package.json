@@ -6,12 +6,17 @@
   "engines": { "node": ">=24.0.0" },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "tsc --noEmit && vite build && node scripts/build-routes.mjs",
+    "build": "node scripts/research.mjs validate && tsc --noEmit && vite build && node scripts/build-routes.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src tests",
+    "lint": "eslint src tests scripts",
     "test": "node --test tests/*.test.mjs",
-    "check": "npm run typecheck && npm run lint && npm test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm test && npm run research:validate && npm run build",
+    "research:validate": "node scripts/research.mjs validate",
+    "research:generate": "node scripts/research.mjs generate",
+    "research:pause": "node scripts/research.mjs pause",
+    "research:edit": "node scripts/research.mjs edit",
+    "research:remove": "node scripts/research.mjs remove"
   },
   "dependencies": { "@fontsource-variable/inter": "5.3.0" },
   "devDependencies": {
