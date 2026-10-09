@@ -1,6 +1,6 @@
 # Valar Exchange
 
-A standalone, responsive Valar Exchange marketing website and product preview. It adapts the high-level institutional structure of the public Stoa website using original Valar copy, Tahoe's authorized blue lake/silver assets, and original interface graphics. No Stoa logo, customer logo, code, images, documentation, or traction claims are included.
+A standalone, responsive Valar Exchange marketing website and product preview. It adapts the high-level institutional structure of the public Stoa website using original Valar copy, a restrained white/stone/ink palette, an original VALAR wordmark and GPU interface graphics. No Stoa logo, customer logo, code, images, documentation, or traction claims are included.
 
 ## Run locally
 
@@ -16,15 +16,17 @@ npm run check
 npm run preview -- --port 4173
 ```
 
-`npm run check` runs TypeScript, ESLint, focused DOM/model tests, and the production build. The build outputs 40 public route directories and a `404.html` page in `dist/`. Nested routes are actual static HTML files, so a static host can serve direct links without requiring a proprietary rewrite service. All assets and fonts are bundled locally.
+`npm run check` runs TypeScript, ESLint, focused DOM/model tests, and the production build. The build outputs 46 public route directories and a `404.html` page in `dist/`. Nested routes are actual static HTML files, so a static host can serve direct links without requiring a proprietary rewrite service. All assets and fonts are bundled locally.
 
 ## Implemented
 
-- Markets, Intelligence, Data, Research and three original articles.
+- Markets with three fictional deal profiles, combined search/hardware/region/strategy filters, sorting and profile downloads.
+- GPU-IQ Free public summaries and an openly accessible Premium demonstration with comparisons, filters, original research and local CSV exports. No secure paywall, pricing, subscription or checkout.
+- Data, Research and three original articles.
 - About, FAQ, Contact, access chooser, product signup previews, sign-in/recovery availability pages, privacy, terms, security and trust status.
 - Original browser-product documentation, CLI availability pages, and reference-route aliases.
 - Three synthetic fleets; 4/8 GPUs per node; bounded quantity controls; condition assumptions; Markets/Intelligence/Reporting tabs with keyboard navigation.
-- Sample report TXT, synthetic dataset JSON, local review/access/inquiry/reading-preference TXT downloads.
+- Sample report TXT, synthetic dataset JSON, local review/access/inquiry/reading-preference TXT downloads, with allowlisted deal-to-access preselection.
 - Native dialogs, focus restoration, responsive menu, native browser navigation/history, documentation Copy with a download fallback.
 
 ## Preview boundaries
