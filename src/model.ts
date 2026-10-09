@@ -5,9 +5,9 @@ export type Condition = 'new' | 'refurbished' | 'used';
 
 // Synthetic examples for demonstrating the interface. These are not quotes or market prices.
 export const fleets = {
-  h100: { name: 'H100 SXM', memory: '80 GB', code: 'TE–014', low: 18000, high: 24000, evidence: 6, total: 8, condition: 'Documented use', months: 18 },
-  h200: { name: 'H200 SXM', memory: '141 GB', code: 'TE–021', low: 24000, high: 32000, evidence: 5, total: 8, condition: 'New inventory', months: 6 },
-  a100: { name: 'A100 SXM', memory: '80 GB', code: 'TE–008', low: 7000, high: 11000, evidence: 7, total: 8, condition: 'Documented use', months: 30 },
+  h100: { name: 'H100 SXM', memory: '80 GB', code: 'VE–014', low: 18000, high: 24000, evidence: 6, total: 8, condition: 'Documented use', months: 18 },
+  h200: { name: 'H200 SXM', memory: '141 GB', code: 'VE–021', low: 24000, high: 32000, evidence: 5, total: 8, condition: 'New inventory', months: 6 },
+  a100: { name: 'A100 SXM', memory: '80 GB', code: 'VE–008', low: 7000, high: 11000, evidence: 7, total: 8, condition: 'Documented use', months: 30 },
 } as const;
 
 export const evidenceItems = ['Ownership record', 'Hardware inventory', 'Configuration record', 'Condition assessment', 'Utilization history', 'Valuation assumptions', 'Warranty record', 'Insurance record'];
@@ -41,7 +41,7 @@ export function compactMoney(value: number): string {
 export function sampleReport(key: FleetKey, quantity: number, nodeSize: NodeSize = 8, condition?: Condition): string {
   const f = fleetSummary(key, quantity, nodeSize, condition);
   return [
-    'TAHOE EXCHANGE | ILLUSTRATIVE ASSET REPORT',
+    'VALAR EXCHANGE | ILLUSTRATIVE ASSET REPORT',
     'Product preview — synthetic data. Not live pricing, an appraisal, a financing offer, or investment advice.',
     '', `Fleet: ${f.code}`, `Asset: ${f.name} (${f.memory})`, `Quantity: ${f.units} GPUs / ${f.nodes} nodes`,
     `Node configuration: ${f.nodeSize} GPUs / node`, `Condition assumption: ${f.condition}`, `Age assumption: ${f.months} months`,

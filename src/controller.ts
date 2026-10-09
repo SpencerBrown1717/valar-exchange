@@ -102,11 +102,11 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
     }
     if (action === 'brief') { doc.querySelector('#brief-status')!.textContent = ''; openDialog(briefDialog); }
     if (action === 'dataset') {
-      download('tahoe-exchange-synthetic-data.json', JSON.stringify({ status: 'illustrative', disclosure: 'Synthetic examples. Not live prices, appraisals, or financing offers.', records: ['h100', 'h200', 'a100'].map(key => fleetSummary(validFleet(key), 64)) }, null, 2));
+      download('valar-exchange-synthetic-data.json', JSON.stringify({ status: 'illustrative', disclosure: 'Synthetic examples. Not live prices, appraisals, or financing offers.', records: ['h100', 'h200', 'a100'].map(key => fleetSummary(validFleet(key), 64)) }, null, 2));
     }
   });
 
-  doc.querySelector('#download-report')!.addEventListener('click', () => download('tahoe-exchange-sample-report.txt', sampleReport(validFleet(fleet.value), Number(quantity.value), nodeSize, condition.value as Condition)));
+  doc.querySelector('#download-report')!.addEventListener('click', () => download('valar-exchange-sample-report.txt', sampleReport(validFleet(fleet.value), Number(quantity.value), nodeSize, condition.value as Condition)));
   doc.querySelector<HTMLFormElement>('#brief-form')!.addEventListener('submit', event => {
     event.preventDefault();
     const form = event.currentTarget as HTMLFormElement;
@@ -115,8 +115,8 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
     const hardware = doc.querySelector<HTMLSelectElement>('#brief-hardware')!.value;
     const count = doc.querySelector<HTMLInputElement>('#brief-quantity')!.value;
     const notes = doc.querySelector<HTMLTextAreaElement>('#brief-notes')!.value.trim();
-    const text = ['TAHOE EXCHANGE | LOCAL REVIEW BRIEF', '', `Review focus: ${purpose}`, `Hardware: ${hardware}`, `GPU count: ${count}`, '', 'QUESTIONS FOR REVIEW', notes || 'No questions added.', '', 'SUGGESTED EVIDENCE TO ORGANIZE', '[ ] Ownership and purchase records', '[ ] Asset identifiers and configuration', '[ ] Condition and utilization history', '[ ] Dated valuation sources and assumptions', '[ ] Warranty and insurance records', '', 'This brief was created locally. It has not been submitted to Tahoe or any third party.', 'Planning only. Not a loan application, appraisal, trade instruction, or financing offer.'].join('\n');
-    download('tahoe-exchange-review-brief.txt', text);
+    const text = ['VALAR EXCHANGE | LOCAL REVIEW BRIEF', '', `Review focus: ${purpose}`, `Hardware: ${hardware}`, `GPU count: ${count}`, '', 'QUESTIONS FOR REVIEW', notes || 'No questions added.', '', 'SUGGESTED EVIDENCE TO ORGANIZE', '[ ] Ownership and purchase records', '[ ] Asset identifiers and configuration', '[ ] Condition and utilization history', '[ ] Dated valuation sources and assumptions', '[ ] Warranty and insurance records', '', 'This brief was created locally. It has not been submitted to Valar Exchange or any third party.', 'Planning only. Not a loan application, appraisal, trade instruction, or financing offer.'].join('\n');
+    download('valar-exchange-review-brief.txt', text);
     doc.querySelector('#brief-status')!.textContent = 'Your brief is ready. Check your downloads. Nothing was submitted.';
   });
   update();
@@ -128,7 +128,7 @@ export function initializePageControls(doc: Document, download = downloadText) {
       event.preventDefault();
       if (!form.reportValidity()) return;
       const lines = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input,select,textarea')].filter(field => field.name && (!('type' in field) || field.type !== 'checkbox' || (field as HTMLInputElement).checked)).map(field => `${field.name}: ${field.value}`);
-      download(`tahoe-exchange-${form.dataset.localForm}-brief.txt`, ['TAHOE EXCHANGE | LOCAL PREVIEW BRIEF', '', ...lines, '', 'Saved locally. Nothing was sent or submitted. No account, subscription, inquiry, trade, or financing application was created.', 'Do not include passwords, credentials, or sensitive identity/financial information.'].join('\n'));
+      download(`valar-exchange-${form.dataset.localForm}-brief.txt`, ['VALAR EXCHANGE | LOCAL PREVIEW BRIEF', '', ...lines, '', 'Saved locally. Nothing was sent or submitted. No account, subscription, inquiry, trade, or financing application was created.', 'Do not include passwords, credentials, or sensitive identity/financial information.'].join('\n'));
       form.querySelector('[role="status"]')!.textContent = 'Your local brief is ready. Nothing was sent; no account or subscription was created.';
     });
     form.querySelectorAll<HTMLButtonElement>('button[type="submit"]').forEach(button => { button.disabled = false; });
@@ -142,7 +142,7 @@ export function initializePageControls(doc: Document, download = downloadText) {
       button.textContent = 'Copied';
       button.setAttribute('aria-label', 'Example copied to clipboard');
     } catch {
-      download('tahoe-exchange-example.txt', content);
+      download('valar-exchange-example.txt', content);
       button.textContent = 'Downloaded';
       button.setAttribute('aria-label', 'Clipboard unavailable; example downloaded instead');
     }

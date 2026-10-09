@@ -2,14 +2,14 @@
 
 Reference: https://www.stoaexchange.com, inspected October 8–9, 2026 through public HTML/CSS, read-only web pages, and actual desktop/mobile rendering in isolated headless Chrome. The public model, node-size, condition, and quantity controls were exercised and changed the displayed example. Reference screenshots are retained outside this repository as QA evidence; no reference graphics, logos, or source were included in the build.
 
-| Reference area | Tahoe routes | Working frontend action / availability |
+| Reference area | Valar routes | Working frontend action / availability |
 | --- | --- | --- |
 | Home | `/` | Announcement, product/company menus, hero/report CTAs, fleet controls, product tabs, workflow and FAQ |
 | Markets | `/marketplace`, `/markets` | Interactive fleet record, 4/8 GPU configuration, quantity decrement/increment/input, condition selector, local review request, access preview |
 | Intelligence | `/intelligence` | Interactive evidence/valuation scenario, report view, access preview; no live marks |
 | Data | `/data` | Synthetic JSON download, data-partner access brief; query selects partner interest |
 | Research | `/research` | Original article cards, selected docs reading, local reading preference; no subscription delivery |
-| Articles | `/research/how-the-secondary-gpu-market-works`, `/research/what-gpu-backed-lending-is`, `/research/why-gpu-price-discovery-is-fragmented` | Original Tahoe evidence, readiness and valuation notes; common links |
+| Articles | `/research/how-the-secondary-gpu-market-works`, `/research/what-gpu-backed-lending-is`, `/research/why-gpu-price-discovery-is-fragmented` | Original Valar evidence, readiness and valuation notes; common links |
 | Access chooser | `/signup` | Markets/Intelligence choices |
 | Access previews | `/marketplace/signup`, `/intelligence/signup` | Name/organization/email optional, organization type, interests, activity/certificate/data-partner controls, notes; local TXT export, switch product, privacy/terms |
 | Contact | `/contact` | Original local inquiry form, role/interests/message, general/media/technical availability; no email or support submission |
