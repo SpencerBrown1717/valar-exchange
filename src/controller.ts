@@ -123,13 +123,16 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
 }
 
 export function initializePageControls(doc: Document, download = downloadText) {
-  doc.querySelectorAll<HTMLFormElement>('[data-local-form]').forEach(form => form.addEventListener('submit', event => {
-    event.preventDefault();
-    if (!form.reportValidity()) return;
-    const lines = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input,select,textarea')].filter(field => field.name && (!('type' in field) || field.type !== 'checkbox' || (field as HTMLInputElement).checked)).map(field => `${field.name}: ${field.value}`);
-    download(`tahoe-exchange-${form.dataset.localForm}-brief.txt`, ['TAHOE EXCHANGE | LOCAL PREVIEW BRIEF', '', ...lines, '', 'Saved locally. Nothing was sent or submitted. No account, subscription, inquiry, trade, or financing application was created.', 'Do not include passwords, credentials, or sensitive identity/financial information.'].join('\n'));
-    form.querySelector('[role="status"]')!.textContent = 'Your local brief is ready. Nothing was sent; no account or subscription was created.';
-  }));
+  doc.querySelectorAll<HTMLFormElement>('[data-local-form]').forEach(form => {
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const lines = [...form.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input,select,textarea')].filter(field => field.name && (!('type' in field) || field.type !== 'checkbox' || (field as HTMLInputElement).checked)).map(field => `${field.name}: ${field.value}`);
+      download(`tahoe-exchange-${form.dataset.localForm}-brief.txt`, ['TAHOE EXCHANGE | LOCAL PREVIEW BRIEF', '', ...lines, '', 'Saved locally. Nothing was sent or submitted. No account, subscription, inquiry, trade, or financing application was created.', 'Do not include passwords, credentials, or sensitive identity/financial information.'].join('\n'));
+      form.querySelector('[role="status"]')!.textContent = 'Your local brief is ready. Nothing was sent; no account or subscription was created.';
+    });
+    form.querySelectorAll<HTMLButtonElement>('button[type="submit"]').forEach(button => { button.disabled = false; });
+  });
   doc.querySelectorAll<HTMLButtonElement>('.copy-code').forEach(button => button.addEventListener('click', async () => {
     const content = doc.querySelector(`#${button.dataset.codeId}`)!.textContent ?? '';
     try {
