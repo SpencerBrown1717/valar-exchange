@@ -1,6 +1,6 @@
 # Valar Exchange
 
-A standalone, responsive Valar Exchange marketing website and product preview. It adapts the high-level institutional structure of the public Stoa website using original Valar copy, a restrained white/stone/ink palette, an original VALAR wordmark and GPU interface graphics. No Stoa logo, customer logo, code, images, documentation, or traction claims are included.
+A standalone, responsive Valar Exchange marketing website and product preview in [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). It uses original Valar copy and graphics, with the public Stoa website as a design reference. No Stoa logo, customer logo, code, images, documentation, or traction claims are included. The visual correction follows fresh desktop and mobile comparisons of the public reference: flat GPU silhouettes, attached calculator controls, gradient result panels, structured workflow rows and a compact dark footer.
 
 ## Run locally
 
@@ -35,6 +35,6 @@ There is no trading, quote execution, financing, payments, custody, authenticati
 
 ## Release and hosting
 
-This repository was empty when work began; it had no application, `AGENTS.md`, license, deployment configuration, or existing hosting target. The website implementation is on main. A separate Vercel project/default URL was authorized, but the connected credential cannot access the owner’s intended Vercel scope; no public deployment has been verified. No Tahoe Cloud/deck domain, other checkout, network service, or existing hosting project was changed.
+Verified production: [tahoe-cloud-exchange.vercel.app](https://tahoe-cloud-exchange.vercel.app), deployed from main at [`2fcc81a`](https://github.com/SpencerBrown1717/valar-exchange/commit/2fcc81ae8df686a892f8e3d87f1edea5e25bfe60). The owner deployed this repository through its existing Vercel project. The GitHub repository was renamed in place from `Tahoe_Cloud_Exchange` to `valar-exchange`; preserve that project linkage and its current production URL.
 
-Restore access to the intended Vercel scope, then deploy **this repository** to a dedicated project before declaring a public release. Build command: `npm run build`; output directory: `dist`; Node: 24+. No environment variables are required. See [release evidence](docs/RELEASE.md), [reference route/control coverage](docs/REFERENCE_INVENTORY.md), and [asset notices](NOTICE.md).
+For a new release, verify the served assets and Vercel source commit before reporting it live. Build command: `npm run build`; output directory: `dist`; Node: 24+. No environment variables are required. See [release evidence](docs/RELEASE.md), [reference route/control coverage](docs/REFERENCE_INVENTORY.md), and [asset notices](NOTICE.md).

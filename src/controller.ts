@@ -28,6 +28,8 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
     if (slider) { slider.value = String(count); slider.min = String(nodeSize); slider.step = String(nodeSize); }
     const rangeLabel = doc.querySelector('#range-label');
     if (rangeLabel) rangeLabel.textContent = `${count} GPUs`;
+    const nodeCount = doc.querySelector('#node-count');
+    if (nodeCount) nodeCount.textContent = `${count / nodeSize} nodes`;
     doc.querySelectorAll<HTMLElement>('[data-fleet]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.fleet === fleet.value)));
     doc.querySelectorAll<HTMLElement>('[data-condition]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.condition === condition.value)));
     panel.innerHTML = productPanel(tab, key, count, nodeSize, condition.value as Condition);

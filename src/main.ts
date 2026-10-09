@@ -2,6 +2,7 @@ import '@fontsource-variable/inter';
 import './styles.css';
 import './pages.css';
 import './reference.css';
+import './fidelity.css';
 import { renderPage } from './pages.ts';
 import { initializeSite, initializePageControls } from './controller.ts';
 
