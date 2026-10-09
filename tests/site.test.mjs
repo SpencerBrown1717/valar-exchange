@@ -6,7 +6,7 @@ import { initializeSite, initializePageControls } from '../src/controller.ts';
 import { fleetSummary, normalizeQuantity, sampleReport } from '../src/model.ts';
 
 function setup(path = '/') {
-  const page = renderPage(path);
+  const page = renderPage(path.split('?')[0]);
   const dom = new JSDOM(page.markup, { url: `https://preview.example${path}` });
   const { document: doc, HTMLDialogElement, Event } = dom.window;
   HTMLDialogElement.prototype.showModal = function () { this.open = true; this.querySelector('button,input')?.focus(); };
@@ -26,7 +26,7 @@ test('every public route renders and every internal link resolves', () => {
     assert.equal(doc.querySelectorAll('h1').length, 1, path);
     assert.match(doc.body.textContent, /preview/i, path);
     assert.match(renderPage(path).title, /\| Valar Exchange$/, path);
-    assert.doesNotMatch(doc.body.textContent, /Tahoe Exchange|TAHOE EXCHANGE/, path);
+    assert.doesNotMatch(doc.body.textContent, /Tahoe|lake-sculpture|lake-mark|tahoe-lake/i, path);
     const ids = [...doc.querySelectorAll('[id]')].map(node => node.id);
     assert.equal(new Set(ids).size, ids.length, `duplicate ID: ${path}`);
     for (const link of doc.querySelectorAll('a[href]')) {
@@ -180,5 +180,67 @@ test('documentation Copy control downloads the example when Clipboard is unavail
   assert.equal(button.textContent, 'Downloaded');
   assert.equal(files[0].name, 'valar-exchange-example.txt');
   assert.match(files[0].content, /"status": "illustrative"/);
+  dom.window.close();
+});
+
+
+test('deal filters combine, recover from empty results, and sort the fictional profiles', () => {
+  const { doc, dom, event } = setup('/marketplace');
+  const select = (id, value) => { const field = doc.getElementById(id); field.value = value; field.dispatchEvent(event('change')); };
+  select('deal-hardware', 'H100');
+  assert.equal(doc.querySelectorAll('#deal-results .deal-card').length, 1);
+  select('deal-region', 'Europe');
+  assert.equal(doc.querySelectorAll('#deal-results .deal-card').length, 0);
+  assert.match(doc.querySelector('#deal-result-count').textContent, /0 fictional profiles/);
+  doc.querySelector('#deal-reset').click();
+  const search = doc.querySelector('#deal-search'); search.value = 'ROTATION'; search.dispatchEvent(event('input'));
+  assert.equal(doc.querySelector('#deal-results h3 a').getAttribute('href'), '/deals/valar-003');
+  doc.querySelector('#deal-reset').click(); select('deal-sort', 'budget');
+  assert.equal(doc.querySelector('#deal-results h3 a').getAttribute('href'), '/deals/valar-003');
+  select('deal-sort', 'evidence');
+  assert.equal(doc.querySelector('#deal-results h3 a').getAttribute('href'), '/deals/valar-003');
+  dom.window.close();
+});
+
+test('deal detail and allowlisted access selection produce only local nonbinding briefs', () => {
+  const detail = setup('/deals/valar-002');
+  assert.equal(detail.doc.querySelector('.investment-preview a').getAttribute('href'), '/marketplace/signup?deal=valar-002');
+  detail.doc.querySelector('[data-deal-download]').click();
+  assert.match(detail.files[0].content, /fictional/i);
+  assert.match(detail.files[0].content, /No commitment, order, account/i);
+  detail.dom.window.close();
+  const { doc, dom, files, event } = setup('/marketplace/signup?deal=valar-002');
+  assert.equal(doc.querySelector('#access-deal').value, 'valar-002');
+  doc.querySelector('[data-local-form]').dispatchEvent(event('submit'));
+  assert.match(files[0].content, /Fictional deal: valar-002/);
+  assert.match(files[0].content, /Nothing was sent or submitted/);
+  dom.window.close();
+  const invalid = setup('/marketplace/signup?deal=%3Cscript%3E');
+  assert.equal(invalid.doc.querySelector('#access-deal').value, '');
+  assert.equal(invalid.doc.querySelector('script'), null);
+  invalid.dom.window.close();
+});
+
+test('GPU-IQ premium is an open preview with filtered fictional metrics and local exports', () => {
+  const { doc, dom, files, event } = setup('/intelligence');
+  assert.match(doc.querySelector('#gpu-iq-premium').textContent, /not a secure paywall/);
+  assert.match(doc.querySelector('#gpu-iq-premium').textContent, /Paid access, subscriptions and checkout are unavailable/);
+  const hardware = doc.querySelector('#intelligence-hardware');
+  hardware.value = 'H200'; hardware.dispatchEvent(event('change'));
+  assert.match(doc.querySelector('#intelligence-results').textContent, /3,600,000/);
+  assert.equal(doc.querySelectorAll('.comparison-row').length, 1);
+  doc.querySelector('#iq-export').click();
+  assert.equal(files[0].name, 'valar-gpu-iq-fictional-comparison.csv');
+  assert.match(files[0].content, /fictional_product_preview/);
+  assert.match(files[0].content, /valar-002/);
+  assert.doesNotMatch(files[0].content, /valar-001/);
+  const region = doc.querySelector('#intelligence-region'); region.value = 'North America'; region.dispatchEvent(event('change'));
+  assert.equal(doc.querySelectorAll('.comparison-row').length, 0);
+  assert.match(doc.querySelector('#intelligence-results').textContent, /\$0/);
+  doc.querySelector('#intelligence-reset').click();
+  assert.equal(doc.querySelectorAll('.comparison-row').length, 3);
+  doc.querySelector('#iq-research-download').click();
+  assert.match(files[1].content, /No live data/);
+  assert.match(files[1].content, /does not activate premium access/);
   dom.window.close();
 });

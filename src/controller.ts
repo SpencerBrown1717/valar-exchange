@@ -1,3 +1,5 @@
+import { initializeDealControls } from './deal-controller.ts';
+import { sampleDeals } from './deals.ts';
 import { productPanel } from './content.ts';
 import { fleetSummary, normalizeQuantity, sampleReport, validFleet, type ProductTab, type NodeSize, type Condition } from './model.ts';
 
@@ -22,6 +24,12 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
     const key = validFleet(fleet.value);
     const count = normalizeQuantity(Number(quantity.value), nodeSize);
     quantity.value = String(count);
+    const slider = doc.querySelector<HTMLInputElement>('#quantity-range');
+    if (slider) { slider.value = String(count); slider.min = String(nodeSize); slider.step = String(nodeSize); }
+    const rangeLabel = doc.querySelector('#range-label');
+    if (rangeLabel) rangeLabel.textContent = `${count} GPUs`;
+    doc.querySelectorAll<HTMLElement>('[data-fleet]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.fleet === fleet.value)));
+    doc.querySelectorAll<HTMLElement>('[data-condition]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.condition === condition.value)));
     panel.innerHTML = productPanel(tab, key, count, nodeSize, condition.value as Condition);
     panel.setAttribute('aria-labelledby', `tab-${tab}`);
     doc.querySelector('#product-description')!.textContent = descriptions[tab];
@@ -44,6 +52,9 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
 
   doc.querySelector('#fleet-select')?.addEventListener('change', update);
   doc.querySelector('#quantity')?.addEventListener('change', update);
+  doc.querySelector('#quantity-range')?.addEventListener('input', event => { quantity.value = (event.currentTarget as HTMLInputElement).value; update(); });
+  doc.querySelectorAll<HTMLElement>('[data-fleet]').forEach(button => button.addEventListener('click', () => { fleet.value = button.dataset.fleet!; update(); }));
+  doc.querySelectorAll<HTMLElement>('[data-condition]').forEach(button => button.addEventListener('click', () => { condition.value = button.dataset.condition!; update(); }));
   doc.querySelector('#quantity-less')?.addEventListener('click', () => { quantity.value = String(Number(quantity.value) - nodeSize); update(); });
   doc.querySelector('#quantity-more')?.addEventListener('click', () => { quantity.value = String(Number(quantity.value) + nodeSize); update(); });
   doc.querySelector('#condition-select')?.addEventListener('change', update);
@@ -66,14 +77,33 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
 
   const menu = doc.querySelector<HTMLButtonElement>('.menu-toggle')!;
   const nav = doc.querySelector<HTMLElement>('#primary-nav')!;
-  function closeMenu() { menu.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-label', 'Open navigation'); nav.classList.remove('is-open'); }
+  const menuBackground = [...doc.querySelectorAll<HTMLElement>('main,.site-footer')];
+  function closeMenu() {
+    menu.setAttribute('aria-expanded', 'false'); menu.setAttribute('aria-label', 'Open navigation'); nav.classList.remove('is-open');
+    doc.body.classList.remove('navigation-open');
+    menuBackground.forEach(element => { element.inert = false; });
+    nav.querySelectorAll<HTMLDetailsElement>('.nav-dropdown').forEach(dropdown => { dropdown.open = false; });
+  }
   menu.addEventListener('click', () => {
-    const expanded = menu.getAttribute('aria-expanded') !== 'true';
-    menu.setAttribute('aria-expanded', String(expanded));
-    menu.setAttribute('aria-label', expanded ? 'Close navigation' : 'Open navigation');
-    nav.classList.toggle('is-open', expanded);
+    if (menu.getAttribute('aria-expanded') === 'true') { closeMenu(); return; }
+    menu.setAttribute('aria-expanded', 'true'); menu.setAttribute('aria-label', 'Close navigation'); nav.classList.add('is-open');
+    doc.body.classList.add('navigation-open');
+    menuBackground.forEach(element => { element.inert = true; });
+    nav.querySelectorAll<HTMLDetailsElement>('.nav-dropdown').forEach(dropdown => { dropdown.open = true; });
+    nav.querySelector<HTMLAnchorElement>('a')?.focus();
   });
-  doc.addEventListener('keydown', event => { if (event.key === 'Escape' && menu.getAttribute('aria-expanded') === 'true') { closeMenu(); menu.focus(); } });
+  doc.defaultView?.addEventListener('resize', () => { if (doc.defaultView!.innerWidth > 760) closeMenu(); });
+  doc.addEventListener('keydown', event => {
+    if (menu.getAttribute('aria-expanded') !== 'true') return;
+    if (event.key === 'Escape') { closeMenu(); menu.focus(); }
+    if (event.key === 'Tab') {
+      const stops = [...nav.querySelectorAll<HTMLElement>('a,button,summary')].filter(element => element.getClientRects().length > 0);
+      stops.push(menu);
+      const first = stops[0], last = stops[stops.length - 1];
+      if (event.shiftKey && doc.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && doc.activeElement === last) { event.preventDefault(); first.focus(); }
+    }
+  });
 
   let lastFocus: HTMLElement | null = null;
   const reportDialog = doc.querySelector<HTMLDialogElement>('#report-dialog')!;
@@ -102,7 +132,7 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
     }
     if (action === 'brief') { doc.querySelector('#brief-status')!.textContent = ''; openDialog(briefDialog); }
     if (action === 'dataset') {
-      download('valar-exchange-synthetic-data.json', JSON.stringify({ status: 'illustrative', disclosure: 'Synthetic examples. Not live prices, appraisals, or financing offers.', records: ['h100', 'h200', 'a100'].map(key => fleetSummary(validFleet(key), 64)) }, null, 2));
+      download('valar-exchange-synthetic-data.json', JSON.stringify({ status: 'illustrative', disclosure: 'Synthetic examples. Not live prices, appraisals, or financing offers.', records: ['h100', 'h200', 'a100'].map(key => fleetSummary(validFleet(key), 64)), fictionalDeals: sampleDeals }, null, 2));
     }
   });
 
@@ -123,6 +153,7 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
 }
 
 export function initializePageControls(doc: Document, download = downloadText) {
+  initializeDealControls(doc, download);
   doc.querySelectorAll<HTMLFormElement>('[data-local-form]').forEach(form => {
     form.addEventListener('submit', event => {
       event.preventDefault();
