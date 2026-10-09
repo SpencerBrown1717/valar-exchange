@@ -11,4 +11,5 @@
 button.sidebar-item{border:0;text-align:left;width:100%;background:transparent}button.sidebar-item.active{background:#ebf4fa;color:#087bbe}.sidebar-item:hover{color:#087bbe;background:#f0f6fa}.asset-table-wrap:focus-visible{outline:2px solid #087bbe;outline-offset:2px}
 /* Preserve the lake asset's square canvas when its display width changes. */
 .lake-sculpture{height:auto}
+.hero{overflow:clip;overflow-clip-margin:8px}
 @media(max-width:680px){.hero-art{overflow:clip}.lake-sculpture{width:100%;max-width:367px;left:50%}}
