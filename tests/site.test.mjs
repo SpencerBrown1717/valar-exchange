@@ -131,7 +131,7 @@ test('sample modal closes and restores the opener focus', () => {
 });
 
 test('brief download keeps entered text as text and makes no submission claim', () => {
-  const { doc, dom, files, event } = setup();
+  const { doc, dom, files, event } = setup('/contact');
   doc.querySelector('[data-action=brief]').click();
   doc.querySelector('#brief-quantity').value = '120';
   doc.querySelector('#brief-notes').value = '<script>alert("example")</script>';
@@ -245,7 +245,7 @@ test('GPU-IQ premium is an open preview with filtered fictional metrics and loca
   dom.window.close();
 });
 
-test('desktop company menu dismisses on Escape or outside click', () => {
+test('desktop product menu dismisses on Escape or outside click', () => {
   const { doc, dom } = setup();
   const dropdown = doc.querySelector('.nav-dropdown');
   const summary = dropdown.querySelector('summary');

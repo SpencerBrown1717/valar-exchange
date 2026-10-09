@@ -1,6 +1,6 @@
 # Valar Exchange
 
-A responsive Valar Exchange marketing website and GPU asset product preview in [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). The interface uses an original institutional design language: warm white surfaces, deep green ink, precise asset data, original GPU schematics, and a shared visual system across discovery, intelligence, research, documentation, and local review briefs.
+A responsive Valar Exchange marketing website and GPU asset product preview in [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). At the owner's request, the interface follows the visual layout of [Stoa Exchange](https://www.stoaexchange.com): white surfaces, slate gray controls, charcoal text, restrained typography, and matching section spacing and illustrations. Valar branding and product content remain specific to this preview; reused reference artwork is identified in [asset notices](NOTICE.md).
 
 The [design foundation](docs/DESIGN_SYSTEM.md) describes the visual tokens, component roles, interaction conventions, and data-state expectations for extending the platform.
 

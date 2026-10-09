@@ -3,9 +3,10 @@ import './styles.css';
 import './pages.css';
 import './reference.css';
 import './fidelity.css';
-import './institutional.css';
 import './editorial.css';
 import './markets.css';
+import './neutral.css';
+import './footer-reference.css';
 import { renderPage } from './pages.ts';
 import { initializeSite, initializePageControls } from './controller.ts';
 

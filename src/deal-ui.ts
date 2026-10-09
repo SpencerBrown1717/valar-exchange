@@ -79,7 +79,14 @@ export function marketIntelligence(): string {
 }
 
 export function gpuArchitecture(): string {
-  const silhouettes = [21, 34, 28, 42, 37, 50, 45, 57, 61, 53, 69, 78];
-  const labels: Record<number, string> = { 3: 'A100 · SAMPLE', 5: 'H100 · SAMPLE', 8: 'H200 · SAMPLE', 10: 'GPU-IQ · PREVIEW', 11: 'VALAR · PREVIEW' };
-  return `<div class="gpu-architecture architecture-silhouettes" role="img" aria-label="Original abstract GPU heatsink silhouettes. Decorative illustration, not market values."><div class="architecture-texture" aria-hidden="true">${Array.from({ length: 10 }, (_, row) => `<span style="--texture-row:${row}">${'A100 · SAMPLE   H100 · SCENARIO   H200 · RECORD   VALAR / GPU-IQ   '.repeat(4)}</span>`).join('')}</div><div class="architecture-columns" aria-hidden="true">${silhouettes.map((height, index) => `<div class="gpu-column column-${index % 3}" style="--column-height:${height}%"><span class="column-caption">${labels[index] ?? ''}</span><i></i></div>`).join('')}</div></div>`;
+  const heights = [114, 167, 148, 213, 190, 243, 224, 274, 304, 262, 328, 370];
+  const mobileHeights = [32, 55, 44, 113, 86, 131, 224, 154, 176, 150, 190, 204];
+  const striped = new Set([1, 3, 5, 8, 10]);
+  const stone = new Set([0, 3, 6, 7, 10]);
+  const labels: Record<number, [string, number, number]> = {
+    3: ['A100 80GB · SAMPLE', 222, 115], 5: ['H100 SXM5 · SAMPLE', 252, 133],
+    8: ['H200 SXM · SAMPLE', 316, 178], 10: ['B200 · SAMPLE', 337, 192],
+    11: ['GB200 NVL · SAMPLE', 379, 209],
+  };
+  return `<div class="gpu-architecture reference-gpu-art" role="img" aria-label="GPU heatsink illustration. Decorative sample labels; no live market values."><img class="reference-plinth" src="/reference/home-hero-surface-plinth.png" alt="" fetchpriority="high"/><div class="reference-pillars" aria-hidden="true">${heights.map((height, index) => `<div class="reference-pillar${striped.has(index) ? ' is-striped' : ''}${index === 6 ? ' desktop-pillar' : ''}" style="--pillar-height:${height}px;--mobile-pillar-height:${mobileHeights[index]}px;--pillar-color:${stone.has(index) ? '#aba297' : '#232323'}"><i class="pillar-cap"></i>${striped.has(index) ? Array.from({ length: 11 }, () => '<i class="pillar-fin"></i>').join('') : ''}${labels[index] ? `<span class="pillar-caption" style="--label-bottom:${labels[index][1]}px;--mobile-label-bottom:${labels[index][2]}px">${labels[index][0]}</span>` : ''}</div>`).join('')}</div></div>`;
 }

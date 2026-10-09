@@ -25,7 +25,10 @@ export function initializeSite(doc: Document, download = downloadText, initialTa
     const count = normalizeQuantity(Number(quantity.value), nodeSize);
     quantity.value = String(count);
     const slider = doc.querySelector<HTMLInputElement>('#quantity-range');
-    if (slider) { slider.value = String(count); slider.min = String(nodeSize); slider.step = String(nodeSize); }
+    if (slider) {
+      slider.value = String(count); slider.min = String(nodeSize); slider.step = String(nodeSize);
+      slider.style.setProperty('--range-progress', `${(count - nodeSize) / (512 - nodeSize) * 100}%`);
+    }
     const rangeLabel = doc.querySelector('#range-label');
     if (rangeLabel) rangeLabel.textContent = `${count} GPUs`;
     const nodeCount = doc.querySelector('#node-count');
