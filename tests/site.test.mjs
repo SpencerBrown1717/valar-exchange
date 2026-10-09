@@ -25,6 +25,8 @@ test('every public route renders and every internal link resolves', () => {
     const { doc, dom } = setup(path);
     assert.equal(doc.querySelectorAll('h1').length, 1, path);
     assert.match(doc.body.textContent, /preview/i, path);
+    assert.match(renderPage(path).title, /\| Valar Exchange$/, path);
+    assert.doesNotMatch(doc.body.textContent, /Tahoe Exchange|TAHOE EXCHANGE/, path);
     const ids = [...doc.querySelectorAll('[id]')].map(node => node.id);
     assert.equal(new Set(ids).size, ids.length, `duplicate ID: ${path}`);
     for (const link of doc.querySelectorAll('a[href]')) {
@@ -77,7 +79,8 @@ test('fleet, condition, node configuration, and quantity update the report consi
   assert.match(doc.querySelector('#report-content').textContent, /New \(assumed\)/);
   assert.match(doc.querySelector('#report-content').textContent, /\$26,400/);
   doc.querySelector('#download-report').click();
-  assert.equal(files[0].name, 'tahoe-exchange-sample-report.txt');
+  assert.equal(files[0].name, 'valar-exchange-sample-report.txt');
+  assert.match(files[0].content, /^VALAR EXCHANGE \| ILLUSTRATIVE ASSET REPORT/);
   assert.match(files[0].content, /synthetic data/i);
   count.value = '99999'; count.dispatchEvent(event('change'));
   assert.equal(count.value, '512');
@@ -133,7 +136,8 @@ test('brief download keeps entered text as text and makes no submission claim', 
   doc.querySelector('#brief-quantity').value = '120';
   doc.querySelector('#brief-notes').value = '<script>alert("example")</script>';
   doc.querySelector('#brief-form').dispatchEvent(event('submit'));
-  assert.equal(files[0].name, 'tahoe-exchange-review-brief.txt');
+  assert.equal(files[0].name, 'valar-exchange-review-brief.txt');
+  assert.match(files[0].content, /^VALAR EXCHANGE \| LOCAL REVIEW BRIEF/);
   assert.match(files[0].content, /GPU count: 120/);
   assert.match(files[0].content, /<script>alert/);
   assert.equal(doc.querySelector('#brief-status script'), null);
@@ -147,12 +151,15 @@ test('contact, access, subscription, and dataset actions produce honest local ex
     const form = doc.querySelector('[data-local-form]');
     form.dispatchEvent(event('submit'));
     assert.equal(files.length, 1, path);
+    assert.equal(files[0].name, `valar-exchange-${form.dataset.localForm}-brief.txt`);
+    assert.match(files[0].content, /^VALAR EXCHANGE \| LOCAL PREVIEW BRIEF/);
     assert.match(files[0].content, /Nothing was sent or submitted/);
     assert.match(form.querySelector('[role=status]').textContent, /no account or subscription was created/);
     dom.window.close();
   }
   const { doc, dom, files } = setup('/data');
   doc.querySelector('[data-action=dataset]').click();
+  assert.equal(files[0].name, 'valar-exchange-synthetic-data.json');
   const data = JSON.parse(files[0].content);
   assert.equal(data.status, 'illustrative');
   assert.equal(data.records.length, 3);
@@ -161,7 +168,7 @@ test('contact, access, subscription, and dataset actions produce honest local ex
 
 test('unknown routes show an honest not-found page', () => {
   assert.match(renderPage('/missing').title, /Page not found/);
-  assert.match(renderPage('/missing').markup, /404 \/ TAHOE EXCHANGE/);
+  assert.match(renderPage('/missing').markup, /404 \/ VALAR EXCHANGE/);
 });
 
 test('documentation Copy control downloads the example when Clipboard is unavailable', async () => {
@@ -171,6 +178,7 @@ test('documentation Copy control downloads the example when Clipboard is unavail
   button.click();
   await Promise.resolve();
   assert.equal(button.textContent, 'Downloaded');
+  assert.equal(files[0].name, 'valar-exchange-example.txt');
   assert.match(files[0].content, /"status": "illustrative"/);
   dom.window.close();
 });

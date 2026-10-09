@@ -18,13 +18,13 @@ export const docsPages: DocPage[] = [
     path: '/docs',
     title: 'Build a clearer asset story.',
     eyebrow: 'Documentation',
-    summary: 'A guide to the Tahoe Exchange preview, its illustrative examples, and the records that make a GPU fleet easier to review.',
+    summary: 'A guide to the Valar Exchange preview, its illustrative examples, and the records that make a GPU fleet easier to review.',
     sections: [
       {
         heading: 'Start with the working preview',
         body: [
           'Explore three sample GPU fleets, change the GPU count, and move between Markets, Intelligence, and Reporting. The example updates in your browser. All asset records and dollar ranges are synthetic.',
-          'You can download a sample asset report or prepare a local review brief. These actions create text files on your device; they do not submit an application or contact Tahoe.',
+          'You can download a sample asset report or prepare a local review brief. These actions create text files on your device; they do not submit an application or contact Valar Exchange.',
         ],
       },
       {
@@ -37,7 +37,7 @@ export const docsPages: DocPage[] = [
       {
         heading: 'CLI documentation is a planning reference',
         body: [
-          'The CLI pages describe possible future workflows. There is no Tahoe Exchange CLI to install, no login endpoint, and no command to execute. Each page points to the available browser action where one exists.',
+          'The CLI pages describe possible future workflows. There is no Valar Exchange CLI to install, no login endpoint, and no command to execute. Each page points to the available browser action where one exists.',
         ],
       },
     ],
@@ -51,7 +51,7 @@ export const docsPages: DocPage[] = [
     path: '/docs/overview',
     title: 'A shared view of GPU assets.',
     eyebrow: 'Product overview',
-    summary: 'Tahoe Exchange is a product preview for organizing the evidence behind a GPU fleet and presenting it for review.',
+    summary: 'Valar Exchange is a product preview for organizing the evidence behind a GPU fleet and presenting it for review.',
     sections: [
       {
         heading: 'Three views, one illustrative fleet',
@@ -105,7 +105,7 @@ export const docsPages: DocPage[] = [
         heading: '3. Save a sample or a brief',
         body: [
           'Open the sample report and use its download action to save a TXT file for the current scenario. The file includes the assumptions, evidence checklist, and an explanation that every figure is illustrative.',
-          'Open the review brief, choose a purpose and hardware, enter a GPU count, and optionally add notes. Its download action saves a separate TXT file. The brief is not submitted to Tahoe or any third party. Escape closes an open dialog and returns focus to the control that opened it.',
+          'Open the review brief, choose a purpose and hardware, enter a GPU count, and optionally add notes. Its download action saves a separate TXT file. The brief is not submitted to Valar Exchange or any third party. Escape closes an open dialog and returns focus to the control that opened it.',
         ],
       },
     ],
@@ -127,13 +127,13 @@ export const docsPages: DocPage[] = [
           'Each sample identifies a GPU model and memory configuration, an example fleet reference, a GPU and node count, and assumed condition and age. Model, memory, age, and evidence coverage come from synthetic scenarios. You can change the GPU quantity, select 4 or 8 GPUs per node, and choose an assumed condition.',
           'The preview does not look up serial numbers, validate ownership, inspect a device, or ingest a real fleet. There is no upload or persistent asset register.',
         ],
-        code: JSON.stringify({status: 'illustrative', records: [{name: 'H100 SXM', memory: '80 GB', code: 'TE–014', units: 64, nodeSize: 8, nodes: 8, condition: 'Documented use', low: 18000, high: 24000, evidence: 6, total: 8, coverage: 75}]}, null, 2),
+        code: JSON.stringify({status: 'illustrative', records: [{name: 'H100 SXM', memory: '80 GB', code: 'VE–014', units: 64, nodeSize: 8, nodes: 8, condition: 'Documented use', low: 18000, high: 24000, evidence: 6, total: 8, coverage: 75}]}, null, 2),
       },
       {
         heading: 'Evidence to organize for a real review',
         body: [
           'A useful review package could include purchase and ownership records, device identifiers, configuration details, condition assessments, utilization history, warranty terms, and insurance records.',
-          'Keep the origin, date, scope, and responsible party alongside each record. Separate a reported fact from an assumption, and mark missing or outdated information explicitly. Tahoe does not verify these records in the current preview.',
+          'Keep the origin, date, scope, and responsible party alongside each record. Separate a reported fact from an assumption, and mark missing or outdated information explicitly. Valar Exchange does not verify these records in the current preview.',
         ],
       },
       {
@@ -191,14 +191,14 @@ export const docsPages: DocPage[] = [
       {
         heading: 'Create a local review brief',
         body: [
-          'The brief dialog collects your review focus, hardware, GPU count, and optional questions. Its download action creates tahoe-exchange-review-brief.txt on your device.',
+          'The brief dialog collects your review focus, hardware, GPU count, and optional questions. Its download action creates valar-exchange-review-brief.txt on your device.',
           'The file also lists suggested evidence to organize: ownership and purchase records, identifiers and configuration, condition and utilization history, dated valuation sources, and warranty and insurance records.',
         ],
       },
       {
         heading: 'What the brief does not do',
         body: [
-          'No brief is sent to Tahoe, a lender, or another party. The website does not assess credit, verify collateral, match lenders, generate loan terms, make a financing offer, accept an application, or take a payment.',
+          'No brief is sent to Valar Exchange, a lender, or another party. The website does not assess credit, verify collateral, match lenders, generate loan terms, make a financing offer, accept an application, or take a payment.',
           'Any future financing workflow would require a separately implemented service, appropriate agreements, permissions, and review. A product concept is not evidence of lender participation or approval.',
         ],
       },
@@ -231,7 +231,7 @@ export const docsPages: DocPage[] = [
       {
         heading: 'Preview, then download',
         body: [
-          'Select your hardware and GPU count before opening the sample report. The dialog shows the corresponding text. The download action saves tahoe-exchange-sample-report.txt.',
+          'Select your hardware and GPU count before opening the sample report. The dialog shows the corresponding text. The download action saves valar-exchange-sample-report.txt.',
           'The download is generated in your browser. There is no report API, scheduled delivery, email, spreadsheet integration, PDF export, or financial reporting system behind the preview.',
         ],
       },
@@ -257,7 +257,7 @@ export const docsPages: DocPage[] = [
       {
         heading: 'Form data stays in the current page',
         body: [
-          'The review-brief fields are handled in your browser. The implemented application does not transmit them to Tahoe or a third party and does not save them to a server, localStorage, or sessionStorage.',
+          'The review-brief fields are handled in your browser. The implemented application does not transmit them to Valar Exchange or a third party and does not save them to a server, localStorage, or sessionStorage.',
           'Fields may remain in the current page while you use it, including after closing the dialog. The site provides no saved account or cross-device recovery. Browser autofill, download handling, and any browser-managed restoration follow your own browser settings.',
         ],
       },
@@ -290,7 +290,7 @@ export const docsPages: DocPage[] = [
       {
         heading: 'Website preview · 0.1',
         body: [
-          'Tahoe Exchange branding, responsive navigation, original product explanations, and public documentation introduce the proposed GPU-asset workflow.',
+          'Valar Exchange branding, responsive navigation, original product explanations, and public documentation introduce the proposed GPU-asset workflow.',
           'The browser demonstration includes synthetic H100, H200, and A100 scenarios; GPU counts from 4 to 512 with 4 or 8 GPUs per node; Markets, Intelligence, and Reporting views; a sample TXT report; and a local TXT review brief.',
         ],
       },
@@ -318,7 +318,7 @@ export const docsPages: DocPage[] = [
     path: '/docs/cli',
     title: 'CLI · planned, unavailable.',
     eyebrow: 'Planned developer tools',
-    summary: 'A possible command-line workflow for asset records and reports. There is no Tahoe Exchange CLI to install or use today.',
+    summary: 'A possible command-line workflow for asset records and reports. There is no Valar Exchange CLI to install or use today.',
     sections: [
       {
         heading: 'Availability',
@@ -350,7 +350,7 @@ export const docsPages: DocPage[] = [
     path: '/docs/cli/login',
     title: 'CLI login · unavailable.',
     eyebrow: 'Planned CLI · authentication',
-    summary: 'Tahoe Exchange has no CLI login, account service, or API credential in the current preview.',
+    summary: 'Valar Exchange has no CLI login, account service, or API credential in the current preview.',
     sections: [
       {
         heading: 'No credentials are required',
@@ -402,7 +402,7 @@ export const docsPages: DocPage[] = [
     path: '/docs/cli/commands',
     title: 'Commands · no executable interface.',
     eyebrow: 'Planned CLI · commands',
-    summary: 'No Tahoe Exchange commands are implemented. Use the browser preview for the available interactions.',
+    summary: 'No Valar Exchange commands are implemented. Use the browser preview for the available interactions.',
     sections: [
       {
         heading: 'Available actions and their location',
@@ -448,7 +448,7 @@ export const docsPages: DocPage[] = [
         heading: 'Use current artifacts carefully',
         body: [
           'You can independently review the sample report or local brief with tools you choose. Check their privacy settings before sharing a file and preserve the sample report’s synthetic-data notice.',
-          'Tahoe Exchange does not send files to an external model or service in this preview.',
+          'Valar Exchange does not send files to an external model or service in this preview.',
         ],
       },
     ],
