@@ -5,16 +5,55 @@ export function initializeDealControls(doc: Document, download: (name: string, c
   const value = (id: string) => doc.querySelector<HTMLInputElement | HTMLSelectElement>('#' + id)?.value ?? '';
   const browser = doc.querySelector('#deal-results');
   if (browser) {
+    const filters = ['deal-search', 'deal-hardware', 'deal-region', 'deal-strategy', 'deal-sort'];
+    const activeFilters = doc.querySelector<HTMLDivElement>('#deal-active-filters');
+    const filterNames: Record<string, string> = { 'deal-search': 'Search', 'deal-hardware': 'Hardware', 'deal-region': 'Region', 'deal-strategy': 'Strategy' };
+    const renderActiveFilters = () => {
+      if (!activeFilters) return;
+      activeFilters.replaceChildren();
+      const selected = Object.entries(filterNames).filter(([id]) => value(id).trim());
+      activeFilters.hidden = !selected.length;
+      if (!selected.length) return;
+      const label = doc.createElement('span');
+      label.textContent = 'Filtered by';
+      activeFilters.append(label);
+      selected.forEach(([id, name]) => {
+        const button = doc.createElement('button');
+        button.type = 'button';
+        button.dataset.removeFilter = id;
+        button.textContent = `${name}: ${value(id).trim()} ×`;
+        button.setAttribute('aria-label', `Remove ${name.toLowerCase()} filter: ${value(id).trim()}`);
+        activeFilters.append(button);
+      });
+    };
     const update = () => {
       const records = filterDeals({ query: value('deal-search'), hardware: value('deal-hardware'), region: value('deal-region'), strategy: value('deal-strategy'), sort: value('deal-sort') });
       browser.innerHTML = dealCards(records);
       doc.querySelector('#deal-result-count')!.textContent = `${records.length} fictional ${records.length === 1 ? 'profile' : 'profiles'}`;
+      renderActiveFilters();
+    };
+    const reset = () => {
+      filters.forEach(id => { (doc.querySelector('#' + id) as HTMLInputElement).value = ''; });
+      update();
     };
     doc.querySelector('#deal-search')!.addEventListener('input', update);
     ['deal-hardware', 'deal-region', 'deal-strategy', 'deal-sort'].forEach(id => doc.querySelector('#' + id)!.addEventListener('change', update));
-    doc.querySelector('#deal-reset')!.addEventListener('click', () => {
-      ['deal-search', 'deal-hardware', 'deal-region', 'deal-strategy', 'deal-sort'].forEach(id => { (doc.querySelector('#' + id) as HTMLInputElement).value = ''; });
+    doc.querySelector('#deal-reset')!.addEventListener('click', reset);
+    browser.addEventListener('click', event => {
+      const target = event.target as HTMLElement;
+      if (target.closest('[data-reset-deals]')) {
+        reset();
+        doc.querySelector<HTMLInputElement>('#deal-search')?.focus();
+      }
+    });
+    activeFilters?.addEventListener('click', event => {
+      const target = event.target as HTMLElement;
+      const id = target.closest<HTMLButtonElement>('[data-remove-filter]')?.dataset.removeFilter;
+      if (!id || !Object.hasOwn(filterNames, id)) return;
+      const field = doc.getElementById(id) as HTMLInputElement | HTMLSelectElement;
+      field.value = '';
       update();
+      field.focus();
     });
   }
   const intelligence = doc.querySelector('#intelligence-results');

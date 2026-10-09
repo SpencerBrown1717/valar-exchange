@@ -1,6 +1,8 @@
 # Valar Exchange
 
-A standalone, responsive Valar Exchange marketing website and product preview in [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). It uses original Valar copy and graphics, with the public Stoa website as a design reference. No Stoa logo, customer logo, code, images, documentation, or traction claims are included. The visual correction follows fresh desktop and mobile comparisons of the public reference: flat GPU silhouettes, attached calculator controls, gradient result panels, structured workflow rows and a compact dark footer.
+A responsive Valar Exchange marketing website and GPU asset product preview in [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). The interface uses an original institutional design language: warm white surfaces, deep green ink, precise asset data, original GPU schematics, and a shared visual system across discovery, intelligence, research, documentation, and local review briefs.
+
+The [design foundation](docs/DESIGN_SYSTEM.md) describes the visual tokens, component roles, interaction conventions, and data-state expectations for extending the platform.
 
 ## Run locally
 
@@ -27,7 +29,8 @@ npm run preview -- --port 4173
 - Original browser-product documentation, CLI availability pages, and reference-route aliases.
 - Three synthetic fleets; 4/8 GPUs per node; bounded quantity controls; condition assumptions; Markets/Intelligence/Reporting tabs with keyboard navigation.
 - Sample report TXT, synthetic dataset JSON, local review/access/inquiry/reading-preference TXT downloads, with allowlisted deal-to-access preselection.
-- Native dialogs, focus restoration, responsive menu, native browser navigation/history, documentation Copy with a download fallback.
+- Native dialogs, focus restoration, responsive menu, desktop dropdown dismissal, active section navigation, mobile documentation disclosure, native browser navigation/history, and documentation Copy with a download fallback.
+- Removable market filters, keyboard-friendly empty-state recovery, a semantic GPU-IQ comparison table, and visible local export feedback.
 
 ## Preview boundaries
 

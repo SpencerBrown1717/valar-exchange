@@ -3,6 +3,9 @@ import './styles.css';
 import './pages.css';
 import './reference.css';
 import './fidelity.css';
+import './institutional.css';
+import './editorial.css';
+import './markets.css';
 import { renderPage } from './pages.ts';
 import { initializeSite, initializePageControls } from './controller.ts';
 
@@ -19,6 +22,9 @@ if (new URLSearchParams(window.location.search).has('data_partner')) {
   if (checkbox) checkbox.checked = true;
 }
 document.querySelectorAll<HTMLAnchorElement>('#primary-nav a').forEach(link => {
-  if (link.pathname === window.location.pathname) link.setAttribute('aria-current', 'page');
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  const current = path === '/markets' ? '/marketplace' : path;
+  if (link.pathname === current) link.setAttribute('aria-current', 'page');
+  else if (current.startsWith(`${link.pathname}/`) || (current.startsWith('/deals/') && link.pathname === '/marketplace')) link.setAttribute('aria-current', 'location');
 });
 if (window.location.hash) requestAnimationFrame(() => document.getElementById(window.location.hash.slice(1))?.scrollIntoView());
