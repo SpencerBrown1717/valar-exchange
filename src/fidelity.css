@@ -1,7 +1,7 @@
 /* The public reference's measured frame, with original Valar artwork and content. */
 .nav-container{width:min(1320px,calc(100% - 96px))}
 .site-header{border-bottom:1px solid #f6f5f5}
-.hero .button,.nav-actions .button,.closing-layout .button{font-weight:400}
+.hero .hero-actions .button,.nav-actions .button,.closing-layout .hero-actions .button{font-weight:400}
 .hero-description{line-height:1.2}
 .preview-credential{font-weight:500;letter-spacing:.08em}
 .architecture-silhouettes{height:490px;background:#e3e1df}
@@ -63,7 +63,8 @@
 .platform-section .demo-disclosure{margin:8px -16px 0;padding:14px 16px;background:#cbc8c4;border-radius:0 0 14px 14px;color:#57524e;min-height:66px;line-height:1.5}
 .result-workspace{min-width:0}
 .workspace-main .product-tabs{margin:10px 16px 0;gap:24px;border-color:#c6c1bc}
-.workspace-main .product-tabs button{min-height:40px;padding:8px 0;min-width:0;margin:0;font-size:12px}
+.workspace-main .product-tabs button{min-height:40px;padding:8px 0;min-width:0;margin:0;font-size:12px;color:#57524e}
+.workspace-main .product-tabs button[aria-selected=true]{color:#272625}
 .quote-comparison{gap:12px}
 .quote-card{height:401px;min-height:401px;padding:16px;background:#fff;border-radius:14px}
 .quote-card>.tiny-label{margin-top:0;font-size:12px;letter-spacing:0;color:#706c6a;line-height:1.6;white-space:normal}
@@ -165,6 +166,7 @@
   .foundation-grid article{height:388px;min-height:388px}
   .foundation-grid .abstract-visual{height:220px;margin-top:24px;margin-bottom:24px}
   .platform-section .workspace{margin-top:48px;grid-template-columns:1fr;gap:32px}
+  .platform-section .platform-heading{align-items:stretch}
   .platform-section .hardware-buttons button{font-size:11px}
   .platform-section .demo-controls{padding:16px 16px 0}
   .platform-section .server-controls{margin-bottom:28px}

@@ -24,6 +24,8 @@ GitHub `Website checks / check` runs the same local checks using Node 24 and pin
 
 ## Historical release authorization and hosting
 
+During the visual-correction PR, the hosted check failed before any steps. Its GitHub annotation reports recent account-payment failures or a spending limit that needs to increase. Account billing and limits were not changed. Local checks and the existing Vercel Git build are separate verification signals.
+
 The earlier browser checks used Chrome with its sandbox enabled and a fresh temporary headless profile. They did not access or change the locked Mini desktop or the owner's browser profile.
 
 Automatic approval review initially rejected the squash merge while the hosted check remained failed. After explicit owner approval to release despite that failure, the normal merge of PR #1 succeeded. PRs #1 and #2 were merged normally. No branch protections or check configuration were changed. This authorization is historical evidence; check the current candidate's hosted CI and release authorization before merging.
