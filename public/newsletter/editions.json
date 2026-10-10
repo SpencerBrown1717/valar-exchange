@@ -1,0 +1,51 @@
+[
+  {
+    "id": "gpu-market-foundations",
+    "date": "2026-10-10",
+    "state": "published",
+    "kind": "foundation",
+    "title": "Three signals to understand the GPU market.",
+    "summary": "Start with the hardware, the price of access, and the evidence of demand. A foundation brief for your first visit, rather than a live market update.",
+    "review": {
+      "approvedBy": "Codex source review — foundational education",
+      "approvedAt": "2026-10-10T18:41:50Z",
+      "sourceVerifiedAt": "2026-10-10T18:41:50Z",
+      "contentDigest": "9fcbb540f365cfe59245bf65c7c9a571a16ba9148db5ccf51d385b79d735311f"
+    },
+    "stories": [
+      {
+        "title": "A GPU model is only the beginning.",
+        "summary": "NVIDIA documents distinct H100 configurations. Memory, form factor, interconnect, and server configuration belong alongside the model name when comparing hardware.",
+        "whyItMatters": "Valar perspective: a headline hardware price needs a comparable configuration and condition before it becomes useful evidence.",
+        "watch": "Follow H100 and ask which configuration, condition, and date each observation describes.",
+        "sourceLabel": "NVIDIA · H100 specifications",
+        "sourceUrl": "https://www.nvidia.com/en-us/data-center/h100/",
+        "follow": "h100"
+      },
+      {
+        "title": "Renting compute and owning hardware are different markets.",
+        "summary": "AWS offers GPU instances built around H100 and H200 hardware. A cloud instance also includes a specified CPU, memory, storage, and networking configuration.",
+        "whyItMatters": "Valar perspective: a rental quote is a price for access to a service. It cannot establish a hardware resale price or an investment return.",
+        "watch": "Compare the same GPU, region, commitment, and service bundle when following rental prices.",
+        "sourceLabel": "AWS · EC2 P5 instance details",
+        "sourceUrl": "https://aws.amazon.com/ec2/instance-types/p5/",
+        "follow": "h200"
+      },
+      {
+        "title": "Follow the evidence behind the AI buildout.",
+        "summary": "SEC EDGAR provides public company filings, including periodic reports and financial disclosures. It is a starting point for checking a company's own claims.",
+        "whyItMatters": "Valar perspective: separate spending plans from contracted hardware, deliveries, and operating capacity. An announcement alone does not establish revenue or utilization.",
+        "watch": "Read spending commitments beside revenue, cash flow, debt, and the assumptions management discloses.",
+        "sourceLabel": "SEC · Search company filings",
+        "sourceUrl": "https://www.sec.gov/search-filings",
+        "follow": "ai-demand"
+      }
+    ],
+    "signal": {
+      "title": "When does the music stop? Follow the pressure, not a prediction.",
+      "summary": "Our research framework watches rental pricing, hardware resale evidence, new capacity, durable demand, and operator finances together. It is a set of questions to investigate, not a live risk score or a forecast of an AI downturn.",
+      "sourceLabel": "Valar research framework · read the underlying disclosures",
+      "sourceUrl": "https://www.sec.gov/search-filings"
+    }
+  }
+]

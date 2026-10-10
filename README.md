@@ -1,8 +1,16 @@
 # Valar Exchange
 
-A responsive Valar Exchange marketing website and GPU asset product preview in [SpencerBrown1717/valar-exchange](https://github.com/SpencerBrown1717/valar-exchange). At the owner's request, the interface follows the visual layout of [Stoa Exchange](https://www.stoaexchange.com): white surfaces, slate gray controls, charcoal text, restrained typography, and matching section spacing and illustrations. Valar branding and product content remain specific to this preview; reused reference artwork is identified in [asset notices](NOTICE.md).
+Valar starts with a daily GPU market brief and takes readers from evidence to a personal view of the market. The visual system retains the owner's slate-gray Stoa reference, with white surfaces, charcoal text, restrained typography, and locally bundled fonts. Reused artwork remains identified in [asset notices](NOTICE.md).
 
-The [design foundation](docs/DESIGN_SYSTEM.md) describes the visual tokens, component roles, interaction conventions, and data-state expectations for extending the platform.
+## Reader journey
+
+- **Today:** a sourced brief and one-field email signup.
+- **Market:** hardware families, the AI cycle research framework, and how to interpret prices and purchases.
+- **Watchlist:** device-local follow/remove with no account required.
+- **Participate:** the economics and availability of hardware ownership, public securities, private projects, and bearish exposure.
+- **Archive:** every published brief has a stable `/brief/<id>` page and matching content digest.
+
+The first edition is explicitly a foundation brief, not live news. Live price feeds, purchase ledgers, volatility calculations, and trading execution are not yet connected. Legacy fictional product demonstrations remain accessible through their original routes.
 
 ## Run locally
 
@@ -15,29 +23,29 @@ npm run dev
 
 ```sh
 npm run check
-npm run preview -- --port 4173
+npm run preview -- --port 4175
 ```
 
-`npm run check` runs TypeScript, ESLint, focused DOM/model tests, and the production build. The build outputs 46 public route directories and a `404.html` page in `dist/`. Nested routes are actual static HTML files, so a static host can serve direct links without requiring a proprietary rewrite service. All assets and fonts are bundled locally.
+Development and preview use the same server-only newsletter handlers as Vercel. An unconfigured API returns a real `503`; the browser does not claim enrollment. Server secrets never use a `VITE_` prefix. The build outputs 52 public static routes plus a `404.html`; new published issues automatically add routes.
 
-## Implemented
+## Mailing list and daily operations
 
-- Markets with three fictional deal profiles, combined search/hardware/region/strategy filters, sorting and profile downloads.
-- GPU-IQ Free public summaries and an openly accessible Premium demonstration with comparisons, filters, original research and local CSV exports. No secure paywall, pricing, subscription or checkout.
-- Data, Research and three original articles.
-- About, FAQ, Contact, access chooser, product signup previews, sign-in/recovery availability pages, privacy, terms, security and trust status.
-- Original browser-product documentation, CLI availability pages, and reference-route aliases.
-- Three synthetic fleets; 4/8 GPUs per node; bounded quantity controls; condition assumptions; Markets/Intelligence/Reporting tabs with keyboard navigation.
-- Sample report TXT, synthetic dataset JSON, local review/access/inquiry/reading-preference TXT downloads, with allowlisted deal-to-access preselection.
-- Native dialogs, focus restoration, responsive menu, desktop dropdown dismissal, active section navigation, mobile documentation disclosure, native browser navigation/history, and documentation Copy with a download fallback.
-- Removable market filters, keyboard-friendly empty-state recovery, a semantic GPU-IQ comparison table, and visible local export feedback.
+A dedicated **Valar Daily Brief** segment and default-opt-out topic have been created in Resend. Signup requires mailbox confirmation before enrollment. Provider-managed unsubscribe preferences and delivery suppressions remain authoritative.
 
-## Preview boundaries
+Configure a verified Valar sender, physical postal address, canonical HTTPS site, server-only Resend key, token secret, and dedicated Upstash database before enabling subscriptions. Use `.env.example` as the variable inventory. Production and test configuration must remain separate. See [newsletter setup](docs/NEWSLETTER_SETUP.md).
 
-There is no trading, quote execution, financing, payments, custody, authentication, account creation, email submission, subscription delivery, uploads, data API, or CLI backend. All amounts, records, and charts are illustrative. Forms create local files and clearly explain that nothing is submitted. The application stores no form content and includes no analytics, cookies, or tracking integrations. Downloads are ordinary unencrypted files on the user's device.
+```sh
+npm run newsletter -- validate public/newsletter/editions.json
+npm run newsletter -- draft content/drafts/new-issue.json
+npm run newsletter -- render public/newsletter/editions.json work/email-preview --id gpu-market-foundations
+```
 
-## Release and hosting
+The editorial pipeline validates sources and approval provenance, renders HTML/plain-text previews, publishes approved issues into the site archive, and sends only after checking the exact public page and dedicated audience. Durable issue locks and delivery records prevent blind duplicate dispatch after uncertain provider responses. `NEWSLETTER_SEND_ENABLED=false` is the default. See [editorial loop](docs/EDITORIAL_LOOP.md).
 
-Verified production: [tahoe-cloud-exchange.vercel.app](https://tahoe-cloud-exchange.vercel.app), deployed from main at [`2fcc81a`](https://github.com/SpencerBrown1717/valar-exchange/commit/2fcc81ae8df686a892f8e3d87f1edea5e25bfe60). The owner deployed this repository through its existing Vercel project. The GitHub repository was renamed in place from `Tahoe_Cloud_Exchange` to `valar-exchange`; preserve that project linkage and its current production URL.
+## Availability and data handling
 
-For a new release, verify the served assets and Vercel source commit before reporting it live. Build command: `npm run build`; output directory: `dist`; Node: 24+. No environment variables are required. See [release evidence](docs/RELEASE.md), [reference route/control coverage](docs/REFERENCE_INVENTORY.md), and [asset notices](NOTICE.md).
+Watchlists stay on the reader's device. Newsletter email addresses are submitted only to the configured API and delivery services. Legacy review/inquiry forms remain local downloads. There is no brokerage, order execution, short-selling connection, lending, custody, payment, authentication, or live market-data backend. Educational exposure pages do not create investments. See the site's privacy notice and [design foundation](docs/DESIGN_SYSTEM.md).
+
+## Hosting
+
+Preserve the existing repository linkage to the owner's Vercel project and production URL. This implementation is reviewed on the existing preview branch; production is unchanged. Vercel serves the Vite static build and the three newsletter Node functions. New releases must be checked against their source commit before being reported live.

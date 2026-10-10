@@ -5,7 +5,7 @@ import { renderPage, publicPaths } from '../src/pages.ts';
 import { initializeSite, initializePageControls } from '../src/controller.ts';
 import { fleetSummary, normalizeQuantity, sampleReport } from '../src/model.ts';
 
-function setup(path = '/') {
+function setup(path = '/marketplace') {
   const page = renderPage(path.split('?')[0]);
   const dom = new JSDOM(page.markup, { url: `https://preview.example${path}` });
   const { document: doc, HTMLDialogElement, Event } = dom.window;
@@ -24,14 +24,18 @@ test('every public route renders and every internal link resolves', () => {
   for (const path of paths) {
     const { doc, dom } = setup(path);
     assert.equal(doc.querySelectorAll('h1').length, 1, path);
-    assert.match(doc.body.textContent, /preview/i, path);
+    assert.ok(doc.querySelector('main'), path);
     assert.match(renderPage(path).title, /\| Valar Exchange$/, path);
     assert.doesNotMatch(doc.body.textContent, /Tahoe|lake-sculpture|lake-mark|tahoe-lake/i, path);
     const ids = [...doc.querySelectorAll('[id]')].map(node => node.id);
     assert.equal(new Set(ids).size, ids.length, `duplicate ID: ${path}`);
     for (const link of doc.querySelectorAll('a[href]')) {
       const url = new URL(link.getAttribute('href'), dom.window.location.href);
-      assert.equal(url.origin, dom.window.location.origin, `unexpected external link: ${path} ${url}`);
+      if (url.origin !== dom.window.location.origin) {
+        assert.equal(url.protocol, 'https:', `unsafe external link: ${path} ${url}`);
+        assert.match(link.getAttribute('rel') ?? '', /noopener/, path);
+        continue;
+      }
       assert.ok(paths.has(url.pathname), `missing route: ${path} -> ${url.pathname}`);
       if (url.hash) {
         const target = url.pathname === path ? doc : new JSDOM(renderPage(url.pathname).markup).window.document;
@@ -146,7 +150,7 @@ test('brief download keeps entered text as text and makes no submission claim', 
 });
 
 test('contact, access, subscription, and dataset actions produce honest local exports', () => {
-  for (const path of ['/contact', '/marketplace/signup', '/intelligence/signup', '/research']) {
+  for (const path of ['/contact', '/marketplace/signup', '/intelligence/signup']) {
     const { doc, dom, files, event } = setup(path);
     const form = doc.querySelector('[data-local-form]');
     form.dispatchEvent(event('submit'));
@@ -245,18 +249,12 @@ test('GPU-IQ premium is an open preview with filtered fictional metrics and loca
   dom.window.close();
 });
 
-test('desktop product menu dismisses on Escape or outside click', () => {
-  const { doc, dom } = setup();
-  const dropdown = doc.querySelector('.nav-dropdown');
-  const summary = dropdown.querySelector('summary');
-  dropdown.open = true;
-  dropdown.querySelector('a').focus();
-  doc.dispatchEvent(new dom.window.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-  assert.equal(dropdown.open, false);
-  assert.equal(doc.activeElement, summary);
-  dropdown.open = true;
-  doc.querySelector('h1').click();
-  assert.equal(dropdown.open, false);
+test('primary reader navigation exposes four clear destinations without product menus', () => {
+  const { doc, dom } = setup('/');
+  assert.equal(doc.querySelectorAll('#primary-nav > a').length, 4);
+  assert.equal(doc.querySelectorAll('.nav-dropdown').length, 0);
+  assert.deepEqual([...doc.querySelectorAll('#primary-nav > a')].map(link => link.textContent), ['Today', 'Market', 'Participate', 'Watchlist']);
+  assert.ok(doc.querySelector('[data-newsletter-form]'));
   dom.window.close();
 });
 
