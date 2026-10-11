@@ -1,4 +1,4 @@
-# VALAR Research editorial playbook · v1
+# VALAR Research editorial playbook · v2
 
 Purpose: one useful, readable brief about a significant GPU industry deal or infrastructure partnership, when the evidence merits publication. This is a supporting publication, not a financial service. Byline: **VALAR Research**. No invented analysts, credentials, human review, visual AI watermark, investment recommendations or promised returns. A small source-and-method note explains AI-assisted synthesis and automatic source checks.
 
@@ -22,8 +22,8 @@ This brief performs **no derived arithmetic**, annualization, implied per-unit p
 
 ## Bounded generation and publication
 
-Three feed requests, at most three source-page requests, two model stages (draft and independent grounding check), at most one retry per model stage for a temporary network/429/502/503/504 failure. Maximum four model requests, 1,200 output tokens/request, 16,000 characters/message, 40-second model timeout and 20-second retry backoff. No paid or stronger-model fallback. A failed check stops the job with a visible owner error; it never publishes a partial article or lowers standards to hit the cadence.
+Three feed requests and at most three source-page requests feed the versioned [small-model prompt flow](RESEARCH_QUALITY.md): evidence editor → writer → factual/writing reviewer. A fully grounded draft may receive one bounded copy edit and fresh review; unsupported evidence cannot enter a repair loop. Normal generation uses three model requests; the maximum is five. Stage output budgets are 1,500/1,800/1,000 tokens, plus 1,800/1,000 for optional revision/review. Aggregate message text is capped at 16,000 UTF-8 bytes; each request has a 40-second deadline. Source windows contain at most 3,200 UTF-8 bytes and end on a complete sentence. There is no automatic inference retry or paid/stronger-model fallback. Failures leave the day unpublished rather than lowering standards.
 
-Automated verification, particularly with a smaller model, is fallible. No actual model-quality evaluation has been performed before serving authorization. Strict fixture tests demonstrate code behavior, not the factual accuracy of unseen Qwen outputs. Qualify the exact intended model using representative source packets before enabling public generation. The inspected Mini inventory contains only `qwen3:8b`; no higher-quality preset was established.
+Automated verification, particularly with a smaller model, is fallible. No actual model-quality evaluation has been performed before serving authorization. Strict fixture tests demonstrate code behavior, not the factual accuracy of unseen Qwen outputs. Qualify the exact intended model using the representative packet scenarios and human rubric in [the quality guide](RESEARCH_QUALITY.md) before enabling public generation. The fresh reviewer pass uses the same model and is not independent verification. The inspected Mini inventory contains only `qwen3:8b`; no higher-quality preset was established.
 
 The daily ledger, story identities and withdrawal tombstones survive retries and owner removals. An atomic, normal main-branch update reserves one calendar-day publication slot. A changed main branch—including a pause/edit/remove—wins over an in-flight draft. Never force a ref, bypass protections or fabricate a successful check.

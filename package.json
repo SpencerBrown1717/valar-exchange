@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24.0.0" },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "node scripts/research.mjs validate && tsc --noEmit && vite build && node scripts/build-routes.mjs",
@@ -16,9 +18,12 @@
     "research:generate": "node scripts/research.mjs generate",
     "research:pause": "node scripts/research.mjs pause",
     "research:edit": "node scripts/research.mjs edit",
-    "research:remove": "node scripts/research.mjs remove"
+    "research:remove": "node scripts/research.mjs remove",
+    "research:draft": "node scripts/research.mjs generate-draft"
   },
-  "dependencies": { "@fontsource-variable/inter": "5.3.0" },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.3.0"
+  },
   "devDependencies": {
     "@eslint/js": "10.0.1",
     "eslint": "10.12.0",

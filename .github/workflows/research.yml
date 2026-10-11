@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    if: github.ref == 'refs/heads/main' && vars.VALAR_RESEARCH_APPROVED == 'true' && (github.event_name == 'workflow_dispatch' || vars.VALAR_RESEARCH_DAILY_ENABLED == 'true')
+    if: vars.VALAR_RESEARCH_APPROVED == 'true' && (github.event_name == 'workflow_dispatch' || (github.ref == 'refs/heads/main' && vars.VALAR_RESEARCH_DAILY_ENABLED == 'true'))
     runs-on: ubuntu-latest
     timeout-minutes: 6
     permissions:
@@ -25,8 +25,9 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Collect and validate one draft
-        run: node scripts/research.mjs generate
+        run: node scripts/research.mjs "$RESEARCH_COMMAND"
         env:
+          RESEARCH_COMMAND: ${{ github.event_name == 'workflow_dispatch' && 'generate-draft' || 'generate' }}
           RESEARCH_RUNTIME_APPROVED: ${{ vars.VALAR_RESEARCH_APPROVED }}
           TAHOE_RESEARCH_CHAT_URL: ${{ vars.TAHOE_RESEARCH_CHAT_URL }}
           TAHOE_RESEARCH_MODEL: ${{ vars.TAHOE_RESEARCH_MODEL }}

@@ -8,11 +8,13 @@ import { createHash } from 'node:crypto';
 import { JSDOM } from 'jsdom';
 import {
   feeds, dayKey, sourceUrl, eligibleDate, sameStory, parseFeed, extractEvidence,
-  boundedFetch, numericClaims, validateMath, checkConflicts, validateDraft,
+  boundedFetch, evidenceWindow, numericClaims, validateMath, checkConflicts, validateDraft,
   validateArticles, reserveArticle, chat, generate, publish,
+  validatePlan, validatePlannedDraft, validateReview, reviewFieldIds, validateServingConfig,
 } from '../scripts/research.mjs';
 import { researchMethodology } from '../src/research-types.ts';
 import { renderResearchIndex, renderNewsArticle } from '../src/research-ui.ts';
+import { editorialMessages, qualityKeys, stageLimits } from '../scripts/research-prompts.mjs';
 
 // All sources, model responses and GitHub responses below are local fixtures.
 // No test contacts a publisher, inference server, GitHub or the production site.
@@ -39,6 +41,16 @@ const draft = () => ({
   analysis: ['The announcement gives readers a basis for tracking approvals rather than estimating an operating schedule.'],
   limitations: ['The available statement provides no investment eligibility assessment or independently verified operating results.'],
 });
+const plan = () => ({ candidate: 0, eventDate: '2026-10-08',
+  angle: 'A proposed compute collaboration depends on approvals before its operating timeline can be assessed.',
+  readerQuestion: 'Which approvals must precede the proposed deployment?',
+  headlineEvidence: draft().titleEvidence, summaryEvidence: draft().summaryEvidence,
+  facts: draft().facts.map((fact, index) => ({ id: `F${index + 1}`, point: fact.text, evidence: fact.evidence })),
+  missing: ['Specific financing terms and deployment dates remain undisclosed.'],
+});
+const review = (value = draft(), changes = {}) => ({ grounded: true, material: true, unsupported: [], eventDate: '2026-10-08',
+  claimChecks: reviewFieldIds(value).map(id => ({ id, supported: true })),
+  quality: Object.fromEntries(qualityKeys.map(key => [key, true])), issues: [], ...changes });
 const article = (changes = {}) => ({
   slug: '2026-10-09-example-partnership',
   title: draft().title,
@@ -91,14 +103,14 @@ async function temporaryRepository(run, { enabled = true, initialState = state()
   }
 }
 
-function generationFetcher({ output = draft(), verdict = { grounded: true, material: true, unsupported: [], eventDate: '2026-10-08' }, source = evidence, quiet = false } = {}) {
+function generationFetcher({ output = draft(), planOutput = output?.skip ? { skip: true } : plan(), verdict = review(output?.skip ? draft() : output), revision = output, secondVerdict = verdict, source = evidence, quiet = false } = {}) {
   const calls = [];
   let inferenceCalls = 0;
   const fetcher = async (target, options = {}) => {
     const href = String(target); calls.push({ href, options });
     if (href === modelEnv.TAHOE_RESEARCH_CHAT_URL) {
       inferenceCalls++;
-      return modelResponse(inferenceCalls === 1 ? output : verdict);
+      return modelResponse([planOutput, output, verdict, revision, secondVerdict][inferenceCalls - 1]);
     }
     const feed = feeds.find(feed => feed.url === href);
     if (feed) return documentResponse(rss(feed === primary && !quiet ? [{ title, url, date: 'Thu, 08 Oct 26 14:00:00 GMT' }] : []));
@@ -350,34 +362,15 @@ test('invalid model response JSON cannot leak its raw body into a surfaced error
   });
 });
 
-test('temporary model failures get one bounded retry and never change model or gateway', async () => {
-  const messages = [{ role: 'user', content: 'Local retry fixture evidence.' }];
+test('uncertain or refused model calls stop after one request without blind metered retries', async () => {
   for (const failure of [429, 502, 503, 504, 'network']) {
-    const waits = [], requests = [];
-    const result = await chat(messages, modelEnv, async (target, options) => {
-      requests.push({ target: String(target), body: JSON.parse(options.body) });
-      if (requests.length === 1) {
-        if (failure === 'network') throw new Error('Fixture network failure');
-        return jsonResponse({ error: 'Fixture temporary failure' }, failure);
-      }
-      return modelResponse({ skip: true });
-    }, async ms => { waits.push(ms); });
-    assert.deepEqual(result, { skip: true });
-    assert.equal(requests.length, 2);
-    assert.deepEqual(waits, [20000]);
-    assert.ok(requests.every(request => request.target === modelEnv.TAHOE_RESEARCH_CHAT_URL && request.body.model === modelEnv.TAHOE_RESEARCH_MODEL));
-  }
-});
-
-test('persistent model or network failure is held after two attempts without paid fallback', async () => {
-  for (const failure of [503, 'network']) {
-    let requests = 0; const waits = [];
-    await assert.rejects(chat([{ role: 'user', content: 'Local persistent-failure fixture.' }], modelEnv, async () => {
+    let requests = 0;
+    await assert.rejects(chat([{ role: 'user', content: 'Local outage fixture.' }], modelEnv, async () => {
       requests++;
       if (failure === 'network') throw new Error('Fixture unavailable network');
-      return jsonResponse({ error: 'Fixture unavailable model' }, failure);
-    }, async ms => { waits.push(ms); }), /HTTP 503|temporarily unreachable/);
-    assert.equal(requests, 2); assert.deepEqual(waits, [20000]);
+      return jsonResponse({ error: 'Fixture temporary failure' }, failure);
+    }), /HTTP|outcome uncertain/);
+    assert.equal(requests, 1);
   }
 });
 
@@ -394,6 +387,39 @@ test('paused, already-used and unauthorized generation performs no source or mod
     assert.deepEqual(await read(dataPath), []);
     assert.deepEqual(await read(statePath), state());
   });
+});
+
+test('private drafts can qualify the live flow while publication stays paused and unreserved', async () => {
+  await temporaryRepository(async () => {
+    const fixture = generationFetcher();
+    assert.equal(await generate({ now, env: modelEnv, fetcher: fixture.fetcher, draftOnly: true }), 'validated-draft');
+    assert.equal(fixture.inferenceCalls(), 3);
+    assert.equal((await read(dataPath)).length, 1);
+    assert.equal((await read(configPath)).enabled, false);
+    assert.equal(await read(proposalPath), null);
+    assert.equal(await publish({ env: publishEnv, fetcher: neverFetch }), 'nothing-to-publish');
+  }, { enabled: false });
+});
+
+test('bad serving configuration is rejected before collecting sources even on a quiet day', async () => {
+  for (const env of [
+    { ...modelEnv, TAHOE_RESEARCH_MODEL: 'unqualified-model' },
+    { ...modelEnv, TAHOE_RESEARCH_CHAT_URL: 'http://localhost/v1/chat/completions' },
+    { ...modelEnv, TAHOE_RESEARCH_CHAT_URL: 'https://example.invalid/v1/chat/completions?secret=fixture' },
+  ]) await temporaryRepository(async () => {
+    await assert.rejects(generate({ now, env, fetcher: neverFetch, draftOnly: true }), /Qwen|HTTPS/);
+    assert.deepEqual(await read(dataPath), []);
+    assert.deepEqual(await read(statePath), state());
+    assert.equal(await read(proposalPath), null);
+  }, { enabled: false });
+  assert.equal(validateServingConfig(modelEnv).href, modelEnv.TAHOE_RESEARCH_CHAT_URL);
+});
+
+test('private mode still requires serving approval', async () => {
+  await temporaryRepository(async () => {
+    await assert.rejects(generate({ now, env: {}, fetcher: neverFetch, draftOnly: true }), /activation configuration/);
+    assert.deepEqual(await read(dataPath), []);
+  }, { enabled: false });
 });
 
 test('quiet feeds, untrusted evidence and explicit model skips leave public content and the ledger untouched', async () => {
@@ -448,11 +474,11 @@ test('malformed drafts and model authorization failures cannot leave public fixt
   });
 });
 
-test('two-stage verified generation preserves source dates, methodology and checked publication hashes', async () => {
+test('three-stage planned and verified generation preserves source dates, methodology and checked publication hashes', async () => {
   await temporaryRepository(async ({ git }) => {
     const base = git(['rev-parse', 'HEAD']); const fixture = generationFetcher();
     assert.equal(await generate({ now, env: modelEnv, fetcher: fixture.fetcher }), 'validated-draft');
-    assert.equal(fixture.inferenceCalls(), 2);
+    assert.equal(fixture.inferenceCalls(), 3);
     const [item] = await read(dataPath);
     assert.equal(item.source.publishedAt, candidate.publishedAt);
     assert.equal(item.eventDate, '2026-10-08');
@@ -460,16 +486,21 @@ test('two-stage verified generation preserves source dates, methodology and chec
     assert.equal(item.methodology, researchMethodology);
     assert.ok(item.facts.every(fact => fact.startsWith('NVIDIA states:')));
     const modelCalls = fixture.calls.filter(call => call.href === modelEnv.TAHOE_RESEARCH_CHAT_URL);
-    const collection = JSON.parse(JSON.parse(modelCalls[0].options.body).messages.find(message => message.role === 'user').content);
+    const collection = JSON.parse(JSON.parse(modelCalls[0].options.body).messages.find(message => message.role === 'user').content.split('\n/no_think')[0]);
     assert.equal(collection.candidates[0].sourceId, 'S0');
     assert.equal(collection.candidates[0].url, url);
     assert.equal(collection.candidates[0].retrievedAt, now.toISOString());
     assert.match(collection.candidates[0].sha256, /^[a-f0-9]{64}$/);
-    const verification = JSON.parse(JSON.parse(modelCalls[1].options.body).messages.find(message => message.role === 'user').content);
+    const verification = JSON.parse(JSON.parse(modelCalls[2].options.body).messages.find(message => message.role === 'user').content.split('\n/no_think')[0]);
     assert.deepEqual(verification.draft.facts.map(fact => [fact.claimId, fact.sourceId]), [['F1', 'S0'], ['F2', 'S0']]);
     const ledger = await read(statePath);
     assert.equal(ledger.stories[0].proof.sourceSha256, collection.candidates[0].sha256);
     assert.equal(ledger.stories[0].proof.model, modelEnv.TAHOE_RESEARCH_MODEL);
+    assert.equal(ledger.stories[0].proof.playbook, '2');
+    assert.equal(ledger.stories[0].proof.revised, false);
+    assert.deepEqual(ledger.stories[0].proof.stages.map(item => item.stage), ['plan', 'write', 'review']);
+    assert.ok(ledger.stories[0].proof.stages.every(item => /^[a-f0-9]{64}$/.test(item.promptSha256)));
+    assert.deepEqual(modelCalls.map(call => JSON.parse(call.options.body).max_tokens), [stageLimits.plan, stageLimits.write, stageLimits.review]);
     assert.deepEqual(ledger.stories[0].proof.claims.map(claim => claim.id), ['H1', 'D1', 'F1', 'F2']);
     assert.ok(ledger.stories[0].proof.claims.every(claim => /^[a-f0-9]{64}$/.test(claim.evidenceSha256)));
     assert.ok(!JSON.stringify(ledger).includes(modelEnv.TAHOE_RESEARCH_API_KEY));
@@ -489,7 +520,7 @@ test('failed verification and unestablished event dates never produce an article
     { grounded: true, material: true, unsupported: [], eventDate: '2026-09-01' },
   ]) await temporaryRepository(async () => {
     const fixture = generationFetcher({ verdict });
-    await assert.rejects(generate({ now, env: modelEnv, fetcher: fixture.fetcher }), /verification|not established|stale/);
+    await assert.rejects(generate({ now, env: modelEnv, fetcher: fixture.fetcher }), /verification|not established|stale|event date/);
     assert.deepEqual(await read(dataPath), []);
     assert.deepEqual(await read(statePath), state());
     assert.equal(await read(proposalPath), null);
@@ -594,4 +625,133 @@ test('news UI escapes source/model text and declines executable source links', (
   const sorted = new JSDOM(renderResearchIndex([older, article()], false));
   assert.equal(sorted.window.document.querySelector('.research-news-card h3 a').getAttribute('href').replace(/\/$/, ''), `/research/${article().slug}`);
   sorted.window.close();
+});
+
+test('evidence planning rejects fabricated excerpts, duplicate facts and unsupported event dates', () => {
+  assert.equal(validatePlan(plan(), [candidate], now), candidate);
+  for (const change of [
+    value => { value.facts[0].evidence = 'Invented supporting evidence that the issuer never published.'; },
+    value => { value.facts[1].evidence = value.facts[0].evidence; value.facts[1].point = value.facts[0].point; },
+    value => { value.eventDate = '2026-10-07'; },
+    value => { value.facts[0].point = 'The proposed GPU partnership receives $9 million in funding.'; },
+  ]) {
+    const value = plan(); change(value);
+    assert.throws(() => validatePlan(value, [candidate], now));
+  }
+});
+
+test('writer cannot swap the story, evidence, fact order or issuer attribution', () => {
+  assert.equal(validatePlannedDraft(draft(), plan(), [candidate], now), candidate);
+  const variants = [
+    value => { value.titleEvidence = support[0]; },
+    value => { value.facts.reverse(); },
+    value => { value.summary = value.summary.replace('NVIDIA', 'The company'); },
+    value => { value.limitations = [...value.analysis]; },
+  ];
+  for (const change of variants) {
+    const value = draft(); change(value);
+    assert.throws(() => validatePlannedDraft(value, plan(), [candidate], now));
+  }
+});
+
+test('a confident reviewer cannot omit a claim, use duplicate IDs or skip a quality criterion', () => {
+  for (const change of [
+    value => { value.claimChecks.pop(); },
+    value => { value.claimChecks.at(-1).id = 'H1'; },
+    value => { value.claimChecks.at(-1).supported = false; },
+    value => { delete value.quality.clear; },
+    value => { value.quality.coherent = 'true'; },
+    value => { value.quality.coherent = false; },
+    value => { value.issues = [{ code: 'add_financial_claim', field: 'analysis', instruction: 'Invent a new growth forecast.' }]; },
+  ]) {
+    const value = review(); change(value);
+    assert.throws(() => validateReview(value, draft(), plan()));
+  }
+});
+
+const copyEditIssue = { code: 'vague_analysis', field: 'analysis', instruction: 'Name approvals as the dependency before readers can assess the operating timeline.' };
+const needsCopyEdit = () => review(draft(), { quality: { ...review().quality, specific: false }, issues: [copyEditIssue] });
+
+test('grounded but vague prose receives one focused rewrite and a fresh full review', async () => {
+  await temporaryRepository(async () => {
+    const revised = draft(); revised.analysis = ['The proposed rollout depends on approvals. Readers should track that decision before assessing the operating timeline.'];
+    const fixture = generationFetcher({ verdict: needsCopyEdit(), revision: revised, secondVerdict: review(revised) });
+    assert.equal(await generate({ now, env: modelEnv, fetcher: fixture.fetcher }), 'validated-draft');
+    assert.equal(fixture.inferenceCalls(), 5);
+    const ledger = await read(statePath);
+    assert.equal(ledger.stories[0].proof.revised, true);
+    assert.deepEqual(ledger.stories[0].proof.stages.map(item => item.stage), ['plan', 'write', 'review', 'revise', 'review']);
+    assert.deepEqual((await read(dataPath))[0].analysis, revised.analysis);
+    const calls = fixture.calls.filter(call => call.href === modelEnv.TAHOE_RESEARCH_CHAT_URL);
+    assert.equal(new Set(calls.map(call => call.options.headers['Idempotency-Key'])).size, 5);
+    assert.ok(calls.every(call => JSON.parse(call.options.body).messages.length === 2));
+    const repair = JSON.parse(JSON.parse(calls[3].options.body).messages[1].content.split('\n/no_think')[0]);
+    assert.deepEqual(repair.issues, [copyEditIssue]);
+    assert.deepEqual(repair.plan, plan());
+  });
+});
+
+test('a second failed copy review is held without looping or saving an article', async () => {
+  await temporaryRepository(async () => {
+    const fixture = generationFetcher({ verdict: needsCopyEdit() });
+    await assert.rejects(generate({ now, env: modelEnv, fetcher: fixture.fetcher }), /after one revision/);
+    assert.equal(fixture.inferenceCalls(), 5);
+    assert.deepEqual(await read(dataPath), []); assert.deepEqual(await read(statePath), state());
+    assert.equal(await read(proposalPath), null);
+  });
+});
+
+test('unsupported claims stop before a rewrite despite a positive writing score', async () => {
+  await temporaryRepository(async () => {
+    const verdict = review(draft(), { grounded: false, unsupported: ['A1'] });
+    const fixture = generationFetcher({ verdict });
+    await assert.rejects(generate({ now, env: modelEnv, fetcher: fixture.fetcher }), /source verification/);
+    assert.equal(fixture.inferenceCalls(), 3);
+    assert.deepEqual(await read(dataPath), []); assert.deepEqual(await read(statePath), state());
+    assert.equal(await read(proposalPath), null);
+  });
+});
+
+test('a copy revision cannot introduce financial figures or alter the planned evidence', async () => {
+  for (const mutate of [
+    value => { value.analysis = ['The proposed partnership will produce $6 billion in revenue for investors.']; },
+    value => { value.facts.reverse(); },
+  ]) await temporaryRepository(async () => {
+    const revision = draft(); mutate(revision);
+    const fixture = generationFetcher({ verdict: needsCopyEdit(), revision });
+    await assert.rejects(generate({ now, env: modelEnv, fetcher: fixture.fetcher }), /numeric|fact ledger/);
+    assert.equal(fixture.inferenceCalls(), 4);
+    assert.deepEqual(await read(dataPath), []); assert.deepEqual(await read(statePath), state());
+    assert.equal(await read(proposalPath), null);
+  });
+});
+
+test('three maximum-sized candidate packets stay within the combined UTF-8 gateway input budget', () => {
+  const candidates = Array.from({ length: 3 }, (_, i) => ({ ...candidate, candidate: i, evidence: 'x'.repeat(3200), sourceId: `S${i}`, retrievedAt: now.toISOString(), sha256: 'a'.repeat(64) }));
+  const messages = editorialMessages('plan', { date: now.toISOString(), playbook: '2', candidates });
+  assert.ok(messages.reduce((total, message) => total + Buffer.byteLength(message.content), 0) <= 16000);
+});
+
+test('stage calls reject aggregate and multi-byte input overflow before inference', async () => {
+  for (const messages of [
+    [{ role: 'system', content: 'x'.repeat(8500) }, { role: 'user', content: 'x'.repeat(8500) }],
+    [{ role: 'user', content: '界'.repeat(6000) }],
+  ]) await assert.rejects(chat(messages, modelEnv, neverFetch), /gateway limit/);
+});
+
+test('empty Qwen no-thinking wrappers are accepted but reasoning, fenced and truncated JSON are held', async () => {
+  const messages = [{ role: 'user', content: 'Local output-format fixture.' }];
+  const wrapped = content => jsonResponse({ choices: [{ message: { content } }] });
+  assert.deepEqual(await chat(messages, modelEnv, async () => wrapped('<think>\n\n</think>\n{"skip":true}')), { skip: true });
+  for (const content of ['<think>Invented reasoning.</think>{"skip":true}', '```json\n{"skip":true}\n```', 'null', '[]']) await assert.rejects(chat(messages, modelEnv, async () => wrapped(content)), /editorial JSON/);
+  await assert.rejects(chat(messages, modelEnv, async () => jsonResponse({ choices: [{ finish_reason: 'length', message: { content: '{"skip":true}' } }] })), /incomplete/);
+});
+
+test('bounded source packets preserve UTF-8 and end at a complete sentence', () => {
+  assert.equal(evidenceWindow(evidence), evidence);
+  const prefix = 'A proposed facility remains subject to permits. '.repeat(12);
+  const result = evidenceWindow(prefix + '界'.repeat(3000) + ' An unresolved condition.');
+  assert.ok(Buffer.byteLength(result) <= 3200);
+  assert.equal(result, prefix.trim());
+  assert.equal(evidenceWindow('x'.repeat(5000)), '', 'An incomplete long sentence is held rather than losing a trailing condition');
 });
